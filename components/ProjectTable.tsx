@@ -1,4 +1,5 @@
-import { STATUSES, TODAY, type Project, type Status } from "@/data/sampleProjects";
+import { STATUSES, type Project, type Status } from "@/data/sampleProjects";
+import { TODAY } from "@/lib/mode";
 import { isOverdue, yen } from "@/lib/projects";
 import RowMenu from "@/components/RowMenu";
 

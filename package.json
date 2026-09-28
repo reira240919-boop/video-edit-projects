@@ -4,6 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3100",
+    "dev:mine": "NEXT_PUBLIC_DATA_MODE=mine next dev -p 3102 -H 127.0.0.1",
+    "build:mine": "NEXT_PUBLIC_DATA_MODE=mine next build",
+    "start:mine": "NEXT_PUBLIC_DATA_MODE=mine next start -p 3101 -H 127.0.0.1",
+    "mine:update": "npm run build:mine && launchctl kickstart -k gui/$(id -u)/com.m39.video-edit-projects-mine",
     "build": "next build",
     "start": "next start -p 3100",
     "lint": "eslint"

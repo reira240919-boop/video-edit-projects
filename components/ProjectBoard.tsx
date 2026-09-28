@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { TODAY, type Project, type Status } from "@/data/sampleProjects";
+import type { Project, Status } from "@/data/sampleProjects";
+import { IS_MINE, TODAY } from "@/lib/mode";
 import { applyStatus, directorNames, filterProjects, sortByDue, type Filter } from "@/lib/projects";
 import { loadProjects, resetProjects, saveProjects } from "@/lib/storage";
 import FilterTabs from "@/components/FilterTabs";
@@ -16,6 +17,7 @@ type FormState = null | { mode: "add" } | { mode: "edit"; project: Project };
 // 画面全体。案件のデータと、選んでいる絞り込みをここで覚える
 export default function ProjectBoard() {
   const [projects, setProjects] = useState<Project[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>({ kind: "all" });
   const [toast, setToast] = useState<Toast | null>(null);
   const [form, setForm] = useState<FormState>(null);
@@ -23,7 +25,9 @@ export default function ProjectBoard() {
 
   // 保存先から読み込む（ブラウザの中にしかないので、開いたあとに読む）
   useEffect(() => {
-    loadProjects().then(setProjects);
+    loadProjects()
+      .then(setProjects)
+      .catch((e) => setLoadError(e instanceof Error ? e.message : "読み込めませんでした"));
   }, []);
 
   // 「保存しました」などを数秒だけ出す
@@ -79,6 +83,10 @@ export default function ProjectBoard() {
     showToast({ text: "最初の6件に戻しました" });
   }
 
+  if (loadError) {
+    return <p className="empty load-error">{loadError}。画面を開き直してください。</p>;
+  }
+
   if (projects == null) {
     return <p className="loading">読み込み中…</p>;
   }
@@ -99,9 +107,12 @@ export default function ProjectBoard() {
       <div className="toolbar">
         <FilterTabs filter={filter} directors={directorNames(projects)} onChange={setFilter} />
         <div className="toolbar-actions">
-          <button type="button" className="btn-secondary" onClick={reset}>
-            最初の6件に戻す
-          </button>
+          {/* 見本だけ。自分用で押すと本物の記録が消えるので出さない */}
+          {!IS_MINE && (
+            <button type="button" className="btn-secondary" onClick={reset}>
+              最初の6件に戻す
+            </button>
+          )}
           <button type="button" className="btn-primary" onClick={() => setForm({ mode: "add" })} disabled={form?.mode === "add"}>
             ＋ 案件を追加
           </button>

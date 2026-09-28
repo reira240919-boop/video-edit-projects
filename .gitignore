@@ -42,3 +42,4 @@ next-env.d.ts
 
 # 自分用のデータ（GitHub に送らない）
 /my-data/
+/.next-mine/

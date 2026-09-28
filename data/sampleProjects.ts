@@ -25,8 +25,8 @@ export type Project = {
   next: string;
 };
 
-// 今日の日付（見本用に固定）
-export const TODAY = "2026-09-28";
+// 見本の今日の日付（固定）。画面では lib/mode.ts の TODAY を使う
+export const SAMPLE_TODAY = "2026-09-28";
 
 export const sampleProjects: Project[] = [
   { id: "p1", name: "商品紹介ショート", director: "山田", type: "ショート", kind: "継続", status: "編集中",
