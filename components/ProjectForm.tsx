@@ -147,7 +147,7 @@ export default function ProjectForm({ initial, directors, onSave, onCancel }: {
             {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </label>
-        {dateField("due", "納品予定日")}
+        {dateField("due", "提出予定日")}
         <label className="field">
           <span>単価（円）</span>
           <input

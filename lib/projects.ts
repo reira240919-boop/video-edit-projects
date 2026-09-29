@@ -11,9 +11,9 @@ export function isUnpaid(p: Project): boolean {
   return (p.status === "納品済み" || p.status === "請求済み") && p.paid == null;
 }
 
-// 編集中の件数（編集中・確認待ち）
-export function countEditing(projects: Project[]): number {
-  return projects.filter((p) => p.status === "編集中" || p.status === "確認待ち").length;
+// 進行中の件数（編集中・提出済み）
+export function countInProgress(projects: Project[]): number {
+  return projects.filter((p) => p.status === "編集中" || p.status === "提出済み").length;
 }
 
 // 未入金の合計（円）
@@ -23,7 +23,7 @@ export function sumUnpaid(projects: Project[]): number {
 
 // 状態を変えるときの日付の決まり
 // - 納品済み・請求済み・入金済みにしたとき、対応する日付が空なら今日の日付を入れる（入っていれば上書きしない）
-// - 状態を前に戻したときは、戻した先より後の段階の日付を消す（例: 入金済み → 確認待ち なら 納品日・請求日・入金日を消す）
+// - 状態を前に戻したときは、戻した先より後の段階の日付を消す（例: 入金済み → 提出済み なら 納品日・請求日・入金日を消す）
 // - 見送りにしたときは、日付を変えない
 const DATE_STEPS = [
   { status: "納品済み", key: "delivered" },
@@ -45,7 +45,7 @@ export function applyStatus(p: Project, status: Status, today: string): Project 
 // ---- 月ごとの売上 ----
 // 月は "YYYY-MM" の文字列で扱う
 
-// 入金予定: 見送り以外で、まだ入金されていないもの（編集中・確認待ちも含む）
+// 入金予定: 見送り以外で、まだ入金されていないもの（編集中・提出済みも含む）
 function isPlanned(p: Project): boolean {
   return p.status !== "見送り" && p.paid == null && p.payDue != null;
 }
@@ -82,7 +82,7 @@ function isDone(p: Project): boolean {
   return p.status === "入金済み";
 }
 
-// 納品予定日が近い順（予定日なしは最後）。完了したものはその下
+// 提出予定日が近い順（予定日なしは最後）。完了したものはその下
 export function sortByDue(projects: Project[]): Project[] {
   return [...projects].sort((a, b) => {
     if (isDone(a) !== isDone(b)) return isDone(a) ? 1 : -1;
@@ -94,7 +94,7 @@ export function sortByDue(projects: Project[]): Project[] {
 }
 
 // ---- 絞り込み ----
-// all: すべて / week: 今週納品 / unpaid: 未入金 / director: 担当Dごと
+// all: すべて / week: 今週提出 / unpaid: 未入金 / director: 担当Dごと
 export type Filter =
   | { kind: "all" }
   | { kind: "week" }
@@ -108,9 +108,14 @@ function addDays(date: string, days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-// 今週納品: 納品予定日が今日から7日以内（見送りは除く）
+// まだ自分が出していない（相談中・受注・編集中）。提出済みから先と見送りは、自分の番ではない
+function isMyTurn(p: Project): boolean {
+  return STATUSES.indexOf(p.status) < STATUSES.indexOf("提出済み");
+}
+
+// 今週提出: 自分の番で、提出予定日が今日から7日以内
 function isDueThisWeek(p: Project, today: string): boolean {
-  return p.status !== "見送り" && p.due != null && p.due >= today && p.due <= addDays(today, 7);
+  return isMyTurn(p) && p.due != null && p.due >= today && p.due <= addDays(today, 7);
 }
 
 export function filterProjects(projects: Project[], filter: Filter, today: string): Project[] {
@@ -131,7 +136,7 @@ export function directorNames(projects: Project[]): string[] {
   return [...new Set(projects.map((p) => p.director))];
 }
 
-// 予定日を過ぎていて、まだ納品していない（見送りは除く）
+// 自分の番なのに提出予定日を過ぎている（提出済みはクライアントの番なので赤くしない）
 export function isOverdue(p: Project, today: string): boolean {
-  return p.due != null && p.delivered == null && p.status !== "見送り" && p.due < today;
+  return isMyTurn(p) && p.due != null && p.due < today;
 }

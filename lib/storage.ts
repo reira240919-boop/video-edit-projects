@@ -12,18 +12,23 @@ function initialProjects(): Project[] {
   return sampleProjects.map((p) => ({ ...p }));
 }
 
+// 昔の呼び方で保存されたデータを今の呼び方に直す（「確認待ち」は「提出済み」に変えた）
+function migrate(projects: Project[]): Project[] {
+  return projects.map((p) => ((p.status as string) === "確認待ち" ? { ...p, status: "提出済み" } : p));
+}
+
 // 自分用で読めなかったときは、見本に切りかえず失敗として扱う（本物の記録と見本が混ざらないように）
 export async function loadProjects(): Promise<Project[]> {
   if (IS_MINE) {
     const res = await fetch(API, { cache: "no-store" });
     if (!res.ok) throw new Error("my-data/projects.json を読めませんでした");
-    return res.json();
+    return migrate(await res.json());
   }
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const data: unknown = JSON.parse(raw);
-      if (Array.isArray(data)) return data as Project[];
+      if (Array.isArray(data)) return migrate(data as Project[]);
     }
   } catch {
     // プライベートウィンドウなどで読めないときは、最初の6件で表示する

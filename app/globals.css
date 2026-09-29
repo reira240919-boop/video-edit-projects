@@ -154,7 +154,7 @@ td.num, th.num { text-align: right; }
 .st-相談中 { background: #eceef0; color: #56616a; }
 .st-受注 { background: #e2e9f0; color: #3f5f80; }
 .st-編集中 { background: #f3e9df; color: #80583a; }
-.st-確認待ち { background: #efecd8; color: #6b5f36; }
+.st-提出済み { background: #efecd8; color: #6b5f36; }
 .st-納品済み { background: #e3ece4; color: #46654d; }
 .st-請求済み { background: #e9e5ef; color: #5d5178; }
 .st-入金済み { background: #dae8e2; color: #3f6a60; }

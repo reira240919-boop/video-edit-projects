@@ -3,7 +3,7 @@
 
 // 状態の一覧（プルダウンもこの順で出す）
 export const STATUSES = [
-  "相談中", "受注", "編集中", "確認待ち", "納品済み", "請求済み", "入金済み", "見送り",
+  "相談中", "受注", "編集中", "提出済み", "納品済み", "請求済み", "入金済み", "見送り",
 ] as const;
 
 export type Status = (typeof STATUSES)[number];
@@ -32,7 +32,7 @@ export const sampleProjects: Project[] = [
   { id: "p1", name: "商品紹介ショート", director: "山田", type: "ショート", kind: "継続", status: "編集中",
     start: "2026-09-20", due: "2026-09-30", delivered: null, price: 15000,
     billed: null, paid: null, payDue: "2026-10-31", next: "初稿を送る" },
-  { id: "p2", name: "対談動画", director: "佐藤", type: "横動画", kind: "新規", status: "確認待ち",
+  { id: "p2", name: "対談動画", director: "佐藤", type: "横動画", kind: "新規", status: "提出済み",
     start: "2026-09-10", due: "2026-09-29", delivered: null, price: 40000,
     billed: null, paid: null, payDue: "2026-10-31", next: "修正を確認する" },
   { id: "p3", name: "リール3本", director: "山田", type: "ショート", kind: "継続", status: "納品済み",

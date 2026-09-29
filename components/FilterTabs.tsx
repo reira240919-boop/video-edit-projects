@@ -2,7 +2,7 @@ import type { Filter } from "@/lib/projects";
 
 const TABS = [
   { kind: "all", label: "すべて" },
-  { kind: "week", label: "今週納品" },
+  { kind: "week", label: "今週提出" },
   { kind: "unpaid", label: "未入金" },
 ] as const;
 

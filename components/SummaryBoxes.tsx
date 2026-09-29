@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import type { Project } from "@/data/sampleProjects";
-import { countEditing, monthLabel, salesMonths, salesOfMonth, sumUnpaid, yen } from "@/lib/projects";
+import { countInProgress, monthLabel, salesMonths, salesOfMonth, sumUnpaid, yen } from "@/lib/projects";
 
-// 上の数字（編集中の件数・納品済みで未入金・月ごとの売上）
+// 上の数字（進行中の件数・納品済みで未入金・月ごとの売上）
 // 絞り込みに関係なく、全件から計算する
 export default function SummaryBoxes({ projects, today }: { projects: Project[]; today: string }) {
   const months = salesMonths(projects, today);
@@ -23,8 +23,8 @@ export default function SummaryBoxes({ projects, today }: { projects: Project[];
         </select>
       </label>
       <div className="summary-box">
-        <div className="summary-label">編集中の件数（編集中・確認待ち）</div>
-        <div className="summary-value">{countEditing(projects)}件</div>
+        <div className="summary-label">進行中の件数（編集中・提出済み）</div>
+        <div className="summary-value">{countInProgress(projects)}件</div>
       </div>
       <div className="summary-box">
         <div className="summary-label">納品済みで未入金</div>

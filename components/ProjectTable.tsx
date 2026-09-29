@@ -4,7 +4,7 @@ import { isOverdue, yen } from "@/lib/projects";
 import RowMenu from "@/components/RowMenu";
 
 const HEADERS = [
-  "案件名", "担当D", "種類", "区分", "着手日", "状態", "納品予定日", "単価",
+  "案件名", "担当D", "種類", "区分", "着手日", "状態", "提出予定日", "単価",
   "請求日", "支払予定日", "入金日", "納品日",
 ];
 
