@@ -5,8 +5,8 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
   font-size: 16px;
   line-height: 1.6;
-  color: #222;
-  background: #f5f6f8;
+  color: #3a3129;
+  background: #faf5ea;
 }
 .wrap { max-width: 1400px; margin: 0 auto; }
 h1 { font-size: 1.6rem; margin: 0 0 20px; }
@@ -21,15 +21,19 @@ h1 { font-size: 1.6rem; margin: 0 0 20px; }
   row-gap: 6px;
   margin-bottom: 24px;
 }
-.month-picker { grid-column: 3; grid-row: 1; padding-left: 16px; font-size: 0.85rem; color: #555; } /* 左端を枠の中の「入金済み」にそろえる */
+.month-picker { grid-column: 3; grid-row: 1; padding-left: 16px; font-size: 0.85rem; color: #6e604f; } /* 左端を枠の中の「入金済み」にそろえる */
 .summary-box {
   grid-row: 2;
-  background: #fff;
+  background: #fffcf5;
   border-radius: 10px;
   padding: 12px 16px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
-.summary-label { font-size: 0.85rem; color: #555; }
+/* 3つの枠はそれぞれ別の淡い色（あんず・ピーチ・セージ） */
+.summary > .summary-box:nth-of-type(1) { background: #fdefd9; }
+.summary > .summary-box:nth-of-type(2) { background: #fbe6de; }
+.summary > .summary-box:nth-of-type(3) { background: #edf1dc; }
+.summary-label { font-size: 0.85rem; color: #6e604f; }
 .summary-value { font-size: 1.3rem; font-weight: bold; }
 
 /* 狭い画面では縦に並べる（プルダウンは売上の枠のすぐ上） */
@@ -47,9 +51,9 @@ h1 { font-size: 1.6rem; margin: 0 0 20px; }
   margin-left: 8px;
   font-size: 0.85rem;
   padding: 2px 6px;
-  border: 1px solid #c5cad3;
+  border: 1px solid #dccfb8;
   border-radius: 6px;
-  background: #fff;
+  background: #fffcf5;
   min-width: 8.5em; /* 9月と10月で幅が変わらないように */
 }
 /* 3つの数字は同じ幅の列に置く（金額の桁が変わっても位置がずれない） */
@@ -69,25 +73,25 @@ h1 { font-size: 1.6rem; margin: 0 0 20px; }
   font-size: 0.9rem;
   line-height: 1.4;
   padding: 4px 14px;
-  border: 1px solid #c5cad3;
+  border: 1px solid #dccfb8;
   border-radius: 999px;
-  background: #fff;
-  color: #333;
+  background: #fffcf5;
+  color: #4a3e33;
   cursor: pointer;
 }
 /* 押したあとにブラウザが付ける濃い太枠は出さない。キーボード操作のときだけ薄い枠を出す */
 .tab:focus, .tab-select:focus { outline: none; }
-.tab:focus-visible { box-shadow: 0 0 0 2px rgba(176, 196, 222, 0.6); }
+.tab:focus-visible { box-shadow: 0 0 0 2px rgba(201, 139, 139, 0.6); }
 .tab.active, .tab-select.active {
-  background: #b0c4de;
-  border-color: #b0c4de;
-  color: #1f2d3d; /* 薄い背景なので文字は濃い色 */
+  background: #f1d6d6;
+  border-color: #f1d6d6;
+  color: #7a3e3e; /* 薄い背景なので文字は濃い色 */
   font-weight: bold;
 }
 
 /* 横1行の表。狭い画面では横にスクロールする */
 .table-wrap {
-  background: #fff;
+  background: #fffcf5;
   border-radius: 10px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   overflow-x: auto;
@@ -96,13 +100,13 @@ table { width: max-content; min-width: 100%; border-collapse: collapse; }
 th, td {
   padding: 10px 12px;
   text-align: left;
-  border-bottom: 1px solid #eceef2;
+  border-bottom: 1px solid #efe6d4;
   font-size: 0.95rem;
   vertical-align: middle;
   white-space: nowrap;
 }
 th {
-  background: #f0f2f6;
+  background: #f5ecda;
   font-weight: bold;
   position: sticky;
   top: 0;
@@ -112,11 +116,11 @@ table { --actions-w: 44px; }
 th:nth-child(-n+2), td:nth-child(-n+2) {
   position: sticky;
   left: 0;
-  background: #fff;
+  background: #fffcf5;
   z-index: 1;
 }
 th:nth-child(2), td:nth-child(2) { left: var(--actions-w); }
-th:nth-child(-n+2) { top: 0; background: #f0f2f6; z-index: 2; }
+th:nth-child(-n+2) { top: 0; background: #f5ecda; z-index: 2; }
 
 /* 案件名は決めた幅を超えたら折り返す（スマホではさらに狭く） */
 td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; min-width: 8em; max-width: 14em; line-height: 1.4; }
@@ -136,17 +140,17 @@ td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; min-width: 8em; 
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #6b7580;
+  color: #8c7a68;
   cursor: pointer;
 }
-.icon-btn:hover { background: #eef1f5; color: #3a4a5c; }
-.icon-btn.is-open { background: #eef1f5; color: #3a4a5c; }
+.icon-btn:hover { background: #f5ecdb; color: #8a6548; }
+.icon-btn.is-open { background: #f5ecdb; color: #8a6548; }
 .icon-btn:focus { outline: none; }
-.icon-btn:focus-visible { box-shadow: 0 0 0 2px rgba(176, 196, 222, 0.8); }
+.icon-btn:focus-visible { box-shadow: 0 0 0 2px rgba(201, 139, 139, 0.8); }
 td.num, th.num { text-align: right; }
 .overdue { color: #c62828; font-weight: bold; background: #fdecea; padding: 2px 6px; border-radius: 4px; }
-.empty { padding: 32px; text-align: center; color: #666; background: #fff; border-radius: 10px; }
-.loading { color: #666; padding: 16px 0; }
+.empty { padding: 32px; text-align: center; color: #7a6c5c; background: #fffcf5; border-radius: 10px; }
+.loading { color: #7a6c5c; padding: 16px 0; }
 
 /* 状態の色 */
 .status { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.9rem; white-space: nowrap; }
@@ -158,7 +162,7 @@ td.num, th.num { text-align: right; }
 .st-納品済み { background: #e3ece4; color: #46654d; }
 .st-請求済み { background: #e9e5ef; color: #5d5178; }
 .st-入金済み { background: #dae8e2; color: #3f6a60; }
-.st-見送り { background: #ebebeb; color: #666; }
+.st-見送り { background: #ebebeb; color: #7a6c5c; }
 
 /* 状態のプルダウン（色付きの丸い形のまま選べる） */
 .status-select {
@@ -176,7 +180,7 @@ td.num, th.num { text-align: right; }
   background-repeat: no-repeat;
 }
 .status-select:focus { outline: none; }
-.status-select:focus-visible { box-shadow: 0 0 0 2px rgba(176, 196, 222, 0.8); }
+.status-select:focus-visible { box-shadow: 0 0 0 2px rgba(201, 139, 139, 0.8); }
 
 /* 「保存しました」などのお知らせ（画面の下に数秒出す） */
 .toast {
@@ -184,7 +188,7 @@ td.num, th.num { text-align: right; }
   left: 50%;
   bottom: 24px;
   transform: translateX(-50%);
-  background: #3a4a5c;
+  background: #c98b8b;
   color: #fff;
   padding: 8px 20px;
   border-radius: 999px;
@@ -197,7 +201,7 @@ td.num, th.num { text-align: right; }
 
 /* 見送りの表（本体の表の下） */
 .sub-section { margin-top: 32px; }
-.sub-section h2 { font-size: 1.1rem; color: #555; margin: 0 0 12px; }
+.sub-section h2 { font-size: 1.1rem; color: #6e604f; margin: 0 0 12px; }
 
 /* ボタン */
 .btn-primary, .btn-secondary {
@@ -208,13 +212,13 @@ td.num, th.num { text-align: right; }
   border-radius: 999px;
   cursor: pointer;
 }
-.btn-primary { background: #3a4a5c; border: 1px solid #3a4a5c; color: #fff; }
+.btn-primary { background: #c98b8b; border: 1px solid #c98b8b; color: #fff; }
 .btn-primary:disabled { opacity: 0.4; cursor: default; }
-.btn-secondary { background: #fff; border: 1px solid #c5cad3; color: #333; }
+.btn-secondary { background: #fffcf5; border: 1px solid #dccfb8; color: #4a3e33; }
 
 /* 追加・修正の入力欄 */
 .project-form {
-  background: #fff;
+  background: #fffcf5;
   border-radius: 10px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   padding: 16px;
@@ -223,16 +227,16 @@ td.num, th.num { text-align: right; }
 .project-form h2 { font-size: 1.05rem; margin: 0 0 12px; }
 /* 広い画面では横に並べ、狭い画面では1列になる */
 .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px 16px; }
-.field { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #555; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #6e604f; }
 .field em { font-style: normal; font-size: 0.75rem; color: #a04040; margin-left: 6px; }
 .field input, .field select {
   font: inherit;
   font-size: 0.95rem;
-  color: #222;
+  color: #3a3129;
   padding: 5px 8px;
-  border: 1px solid #c5cad3;
+  border: 1px solid #dccfb8;
   border-radius: 6px;
-  background: #fff;
+  background: #fffcf5;
   width: 100%;
 }
 .field input.invalid { border-color: #a04040; }
@@ -255,7 +259,7 @@ td.num, th.num { text-align: right; }
   z-index: 20;
   min-width: 120px;
   padding: 4px;
-  background: #fff;
+  background: #fffcf5;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.14);
 }
@@ -270,11 +274,11 @@ td.num, th.num { text-align: right; }
   background: transparent;
   font: inherit;
   font-size: 0.9rem;
-  color: #333;
+  color: #4a3e33;
   text-align: left;
   cursor: pointer;
 }
-.row-menu button:hover, .row-menu button:focus-visible { background: #eef1f5; outline: none; }
+.row-menu button:hover, .row-menu button:focus-visible { background: #f5ecdb; outline: none; }
 .row-menu button.danger { color: #a04040; }
 .row-menu button.danger:hover, .row-menu button.danger:focus-visible { background: #f6e9e9; }
 
@@ -284,7 +288,7 @@ td.num, th.num { text-align: right; }
   margin-left: 10px;
   padding: 2px 10px;
   border-radius: 999px;
-  background: #3a4a5c;
+  background: #c98b8b;
   color: #fff;
   font-size: 0.8rem;
   vertical-align: middle;

@@ -12,8 +12,8 @@
     font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
     font-size: 16px;
     line-height: 1.6;
-    color: #222;
-    background: #f5f6f8;
+    color: #3a3129;
+    background: #faf5ea;
   }
   .wrap { max-width: 1400px; margin: 0 auto; }
   h1 { font-size: 1.6rem; margin: 0 0 20px; }
@@ -26,15 +26,19 @@
     row-gap: 6px;
     margin-bottom: 24px;
   }
-  .month-picker { grid-column: 3; grid-row: 1; padding-left: 16px; font-size: 0.85rem; color: #555; } /* 左端を枠の中の「入金済み」にそろえる */
+  .month-picker { grid-column: 3; grid-row: 1; padding-left: 16px; font-size: 0.85rem; color: #6e604f; } /* 左端を枠の中の「入金済み」にそろえる */
   .summary-box {
     grid-row: 2;
-    background: #fff;
+    background: #fffcf5;
     border-radius: 10px;
     padding: 12px 16px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
-  .summary-label { font-size: 0.85rem; color: #555; }
+  /* 3つの枠はそれぞれ別の淡い色（あんず・ピーチ・セージ） */
+  .summary > .summary-box:nth-of-type(1) { background: #fdefd9; }
+  .summary > .summary-box:nth-of-type(2) { background: #fbe6de; }
+  .summary > .summary-box:nth-of-type(3) { background: #edf1dc; }
+  .summary-label { font-size: 0.85rem; color: #6e604f; }
   .summary-value { font-size: 1.3rem; font-weight: bold; }
 
   /* 狭い画面では縦に並べる（プルダウンは売上の枠のすぐ上） */
@@ -52,9 +56,9 @@
     margin-left: 8px;
     font-size: 0.85rem;
     padding: 2px 6px;
-    border: 1px solid #c5cad3;
+    border: 1px solid #dccfb8;
     border-radius: 6px;
-    background: #fff;
+    background: #fffcf5;
     min-width: 8.5em; /* 9月と10月で幅が変わらないように */
   }
   /* 3つの数字は同じ幅の列に置く（金額の桁が変わっても位置がずれない） */
@@ -71,31 +75,31 @@
   .toolbar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 20px; }
   .toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .btn-primary, .btn-secondary { font: inherit; font-size: 0.9rem; line-height: 1.4; padding: 4px 16px; border-radius: 999px; cursor: pointer; }
-  .btn-primary { background: #3a4a5c; border: 1px solid #3a4a5c; color: #fff; }
-  .btn-secondary { background: #fff; border: 1px solid #c5cad3; color: #333; }
+  .btn-primary { background: #c98b8b; border: 1px solid #c98b8b; color: #fff; }
+  .btn-secondary { background: #fffcf5; border: 1px solid #dccfb8; color: #4a3e33; }
   .tab, .tab-select {
     font-size: 0.9rem;
     line-height: 1.4;
     padding: 4px 14px;
-    border: 1px solid #c5cad3;
+    border: 1px solid #dccfb8;
     border-radius: 999px;
-    background: #fff;
-    color: #333;
+    background: #fffcf5;
+    color: #4a3e33;
     cursor: pointer;
   }
   /* 押したあとにブラウザが付ける濃い太枠は出さない。キーボード操作のときだけ薄い枠を出す */
   .tab:focus, .tab-select:focus { outline: none; }
-  .tab:focus-visible { box-shadow: 0 0 0 2px rgba(176, 196, 222, 0.6); }
+  .tab:focus-visible { box-shadow: 0 0 0 2px rgba(201, 139, 139, 0.6); }
   .tab.active, .tab-select.active {
-    background: #b0c4de;
-    border-color: #b0c4de;
-    color: #1f2d3d; /* 薄い背景なので文字は濃い色 */
+    background: #f1d6d6;
+    border-color: #f1d6d6;
+    color: #7a3e3e; /* 薄い背景なので文字は濃い色 */
     font-weight: bold;
   }
 
   /* 横1行の表。狭い画面では横にスクロールする */
   .table-wrap {
-    background: #fff;
+    background: #fffcf5;
     border-radius: 10px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     overflow-x: auto;
@@ -104,13 +108,13 @@
   th, td {
     padding: 10px 12px;
     text-align: left;
-    border-bottom: 1px solid #eceef2;
+    border-bottom: 1px solid #efe6d4;
     font-size: 0.95rem;
     vertical-align: middle;
     white-space: nowrap;
   }
   th {
-    background: #f0f2f6;
+    background: #f5ecda;
     font-weight: bold;
     position: sticky;
     top: 0;
@@ -120,11 +124,11 @@
   th:nth-child(-n+2), td:nth-child(-n+2) {
     position: sticky;
     left: 0;
-    background: #fff;
+    background: #fffcf5;
     z-index: 1;
   }
   th:nth-child(2), td:nth-child(2) { left: var(--actions-w); }
-  th:nth-child(-n+2) { top: 0; background: #f0f2f6; z-index: 2; }
+  th:nth-child(-n+2) { top: 0; background: #f5ecda; z-index: 2; }
   /* 案件名は決めた幅を超えたら折り返す（スマホではさらに狭く） */
   td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; min-width: 8em; max-width: 14em; line-height: 1.4; }
   @media (max-width: 720px) {
@@ -132,11 +136,11 @@
   }
   /* 行の「⋯」ボタン（見た目だけ。押しても何もしない） */
   .actions { width: var(--actions-w); min-width: var(--actions-w); padding: 6px 8px; }
-  .icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; border: none; border-radius: 6px; background: transparent; color: #6b7580; cursor: pointer; }
-  .icon-btn:hover { background: #eef1f5; color: #3a4a5c; }
+  .icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; border: none; border-radius: 6px; background: transparent; color: #8c7a68; cursor: pointer; }
+  .icon-btn:hover { background: #f5ecdb; color: #8a6548; }
   td.num, th.num { text-align: right; }
   .overdue { color: #c62828; font-weight: bold; background: #fdecea; padding: 2px 6px; border-radius: 4px; }
-  .empty { padding: 32px; text-align: center; color: #666; background: #fff; border-radius: 10px; }
+  .empty { padding: 32px; text-align: center; color: #7a6c5c; background: #fffcf5; border-radius: 10px; }
 
   /* 状態の色 */
   .status { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.9rem; white-space: nowrap; }
@@ -155,11 +159,11 @@
   .st-納品済み { background: #e3ece4; color: #46654d; }
   .st-請求済み { background: #e9e5ef; color: #5d5178; }
   .st-入金済み { background: #dae8e2; color: #3f6a60; }
-  .st-見送り { background: #ebebeb; color: #666; }
+  .st-見送り { background: #ebebeb; color: #7a6c5c; }
 
   /* 見送りの表（本体の表の下） */
   .sub-section { margin-top: 32px; }
-  .sub-section h2 { font-size: 1.1rem; color: #555; margin: 0 0 12px; }
+  .sub-section h2 { font-size: 1.1rem; color: #6e604f; margin: 0 0 12px; }
 </style>
 </head>
 <body>
@@ -344,7 +348,7 @@
   function tableHtml(list) {
     const rows = list.map(p => {
       const overdue = isMyTurn(p) && p.due && daysFromToday(p.due) < 0;
-      const dueHtml = p.due ? (overdue ? `<span class="overdue">${p.due}（過ぎています）</span>` : p.due) : "なし";
+      const dueHtml = p.due ? (overdue ? `<span class="overdue">${p.due}（過ぎています）</span>` : p.due) : "-";
       const statusHtml = `<select class="status status-select st-${p.status}" aria-label="${p.name}の状態">` +
         STATUSES.map(s => `<option${s === p.status ? " selected" : ""}>${s}</option>`).join("") + `</select>`;
       return `<tr>
@@ -353,14 +357,14 @@
         ${cell("担当D", p.director)}
         ${cell("種類", p.type)}
         ${cell("区分", p.kind)}
-        ${cell("着手日", p.start || "なし")}
+        ${cell("着手日", p.start || "-")}
         ${cell("状態", statusHtml)}
         ${cell("提出予定日", dueHtml)}
-        ${cell("単価", p.price != null ? yen(p.price) : "なし")}
+        ${cell("単価", p.price != null ? yen(p.price) : "-")}
         ${cell("請求日", p.billed || "未請求")}
-        ${cell("支払予定日", p.payDue || "なし")}
-        ${cell("入金日", p.paid || "未入金")}
-        ${cell("納品日", p.delivered || "未")}
+        ${cell("支払予定日", p.payDue || "-")}
+        ${cell("入金日", p.paid || "-")}
+        ${cell("納品日", p.delivered || "-")}
       </tr>`;
     }).join("");
     return `<div class="table-wrap"><table>

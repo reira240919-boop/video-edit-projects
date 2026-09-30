@@ -36,7 +36,7 @@ export default function ProjectTable({ projects, onStatusChange, onEdit, onDelet
               <td>{p.director}</td>
               <td>{p.type}</td>
               <td>{p.kind}</td>
-              <td>{p.start ?? "なし"}</td>
+              <td>{p.start ?? "-"}</td>
               <td>
                 {/* 状態はその場で選ぶ。選ぶとすぐ保存する */}
                 <select
@@ -51,15 +51,15 @@ export default function ProjectTable({ projects, onStatusChange, onEdit, onDelet
                 </select>
               </td>
               <td>
-                {p.due == null ? "なし"
+                {p.due == null ? "-"
                   : isOverdue(p, TODAY) ? <span className="overdue">{p.due}（過ぎています）</span>
                   : p.due}
               </td>
-              <td>{p.price != null ? yen(p.price) : "なし"}</td>
+              <td>{p.price != null ? yen(p.price) : "-"}</td>
               <td>{p.billed ?? "未請求"}</td>
-              <td>{p.payDue ?? "なし"}</td>
-              <td>{p.paid ?? "未入金"}</td>
-              <td>{p.delivered ?? "未"}</td>
+              <td>{p.payDue ?? "-"}</td>
+              <td>{p.paid ?? "-"}</td>
+              <td>{p.delivered ?? "-"}</td>
             </tr>
           ))}
         </tbody>
