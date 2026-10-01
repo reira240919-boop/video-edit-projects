@@ -5,6 +5,7 @@ import { STATUSES, type Project, type Status } from "@/data/sampleProjects";
 
 // 入力欄の中身（どれも文字で持ち、保存するときに案件の形に直す）
 type Values = {
+  company: string;
   name: string;
   director: string;
   type: Project["type"];
@@ -20,13 +21,13 @@ type Values = {
 };
 
 const EMPTY: Values = {
-  name: "", director: "", type: "ショート", kind: "新規", start: "", status: "相談中",
+  company: "", name: "", director: "", type: "ショート", kind: "新規", start: "", status: "相談中",
   due: "", price: "", billed: "", payDue: "", paid: "", delivered: "",
 };
 
 function toValues(p: Project): Values {
   return {
-    name: p.name, director: p.director, type: p.type, kind: p.kind, start: p.start ?? "",
+    company: p.company ?? "", name: p.name, director: p.director, type: p.type, kind: p.kind, start: p.start ?? "",
     status: p.status, due: p.due ?? "", price: p.price != null ? String(p.price) : "",
     billed: p.billed ?? "", payDue: p.payDue ?? "", paid: p.paid ?? "", delivered: p.delivered ?? "",
   };
@@ -50,8 +51,9 @@ function validate(v: Values): Errors {
 }
 
 // 追加・修正の入力欄。initial があれば修正（中身入りで開く）
-export default function ProjectForm({ initial, directors, onSave, onCancel }: {
+export default function ProjectForm({ initial, companies, directors, onSave, onCancel }: {
   initial?: Project;
+  companies: string[];
   directors: string[];
   onSave: (project: Project) => void;
   onCancel: () => void;
@@ -77,6 +79,7 @@ export default function ProjectForm({ initial, directors, onSave, onCancel }: {
     const date = (s: string) => (s === "" ? null : s);
     onSave({
       id: initial?.id ?? crypto.randomUUID(),
+      company: values.company.trim() || null,
       name: values.name.trim(),
       director: values.director.trim(),
       type: values.type,
@@ -105,9 +108,20 @@ export default function ProjectForm({ initial, directors, onSave, onCancel }: {
       <h2>{initial ? "案件を修正" : "案件を追加"}</h2>
       <div className="form-grid">
         <label className="field">
+          <span>会社名</span>
+          <input
+            name="company" value={values.company} list="company-list" autoFocus
+            onChange={(e) => set("company", e.target.value)}
+          />
+          {/* 入れたことのある会社名を候補に出す */}
+          <datalist id="company-list">
+            {companies.map((c) => <option key={c} value={c} />)}
+          </datalist>
+        </label>
+        <label className="field">
           <span>案件名<em>必須</em></span>
           <input
-            name="name" value={values.name} autoFocus
+            name="name" value={values.name}
             className={errors.name ? "invalid" : undefined} aria-invalid={!!errors.name}
             onChange={(e) => set("name", e.target.value)}
           />

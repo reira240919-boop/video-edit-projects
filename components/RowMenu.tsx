@@ -35,11 +35,24 @@ function TrashIcon() {
   );
 }
 
-const MENU_HEIGHT = 84; // メニューのおおよその高さ（画面の下に入りきらないときは上に出す）
+function ReceiptIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M5 2h14v20l-3-2-2 2-2-2-2 2-2-2-3 2Z" />
+      <path d="M9 7h6M9 11h6M9 15h4" />
+    </svg>
+  );
+}
+
+// メニューのおおよその高さ（画面の下に入りきらないときは上に出す）
+const menuHeight = (items: number) => 8 + items * 38;
 
 // 行の「⋯」ボタン。押すと「編集」「削除」のメニューを出す
-export default function RowMenu({ label, onEdit, onDelete }: {
+// onInvoice があるときだけ、一番上に「請求書を発行」を出す（自分用の納品済みだけ）
+export default function RowMenu({ label, onInvoice, onEdit, onDelete }: {
   label: string; // 読み上げ用（例: 「対談動画」の操作）
+  onInvoice?: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }) {
@@ -51,8 +64,9 @@ export default function RowMenu({ label, onEdit, onDelete }: {
   function toggle() {
     if (open) return setPos(null);
     const r = buttonRef.current!.getBoundingClientRect();
-    const below = r.bottom + 4 + MENU_HEIGHT <= window.innerHeight;
-    setPos({ top: below ? r.bottom + 4 : r.top - 4 - MENU_HEIGHT, left: r.left });
+    const h = menuHeight(onInvoice ? 3 : 2);
+    const below = r.bottom + 4 + h <= window.innerHeight;
+    setPos({ top: below ? r.bottom + 4 : r.top - 4 - h, left: r.left });
   }
 
   function close(returnFocus = false) {
@@ -101,6 +115,11 @@ export default function RowMenu({ label, onEdit, onDelete }: {
       {/* 表の外（ページの一番上の層）に出して、表の枠で切れないようにする */}
       {open && createPortal(
         <div ref={menuRef} className="row-menu" role="menu" style={{ top: pos.top, left: pos.left }}>
+          {onInvoice && (
+            <button type="button" role="menuitem" className="invoice" onClick={() => { close(); onInvoice(); }}>
+              <ReceiptIcon />請求書を発行
+            </button>
+          )}
           <button type="button" role="menuitem" onClick={() => { close(); onEdit(); }}>
             <PencilIcon />編集
           </button>

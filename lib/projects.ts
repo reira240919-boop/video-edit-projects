@@ -136,6 +136,11 @@ export function directorNames(projects: Project[]): string[] {
   return [...new Set(projects.map((p) => p.director))];
 }
 
+// 入れたことのある会社名（入力欄の候補に出す）
+export function companyNames(projects: Project[]): string[] {
+  return [...new Set(projects.flatMap((p) => (p.company ? [p.company] : [])))];
+}
+
 // 自分の番なのに提出予定日を過ぎている（提出済みはクライアントの番なので赤くしない）
 export function isOverdue(p: Project, today: string): boolean {
   return isMyTurn(p) && p.due != null && p.due < today;

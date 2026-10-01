@@ -4,13 +4,14 @@ import { isOverdue, yen } from "@/lib/projects";
 import RowMenu from "@/components/RowMenu";
 
 const HEADERS = [
-  "案件名", "担当D", "種類", "区分", "着手日", "状態", "提出予定日", "単価",
+  "会社名 / 案件名", "担当D", "種類", "区分", "着手日", "状態", "提出予定日", "単価",
   "請求日", "支払予定日", "入金日", "納品日",
 ];
 
-export default function ProjectTable({ projects, onStatusChange, onEdit, onDelete }: {
+export default function ProjectTable({ projects, onStatusChange, onInvoice, onEdit, onDelete }: {
   projects: Project[];
   onStatusChange: (id: string, status: Status) => void;
+  onInvoice?: (project: Project) => void; // 自分用だけ渡す
   onEdit: (project: Project) => void;
   onDelete: (project: Project) => void;
 }) {
@@ -30,9 +31,18 @@ export default function ProjectTable({ projects, onStatusChange, onEdit, onDelet
           {projects.map((p) => (
             <tr key={p.id}>
               <td className="actions">
-                <RowMenu label={p.name} onEdit={() => onEdit(p)} onDelete={() => onDelete(p)} />
+                <RowMenu
+                  label={p.name}
+                  // 請求書を発行できるのは納品済みだけ
+                  onInvoice={onInvoice && p.status === "納品済み" ? () => onInvoice(p) : undefined}
+                  onEdit={() => onEdit(p)}
+                  onDelete={() => onDelete(p)}
+                />
               </td>
-              <td><strong>{p.name}</strong></td>
+              <td>
+                {p.company && <span className="company">{p.company}</span>}
+                <strong>{p.name}</strong>
+              </td>
               <td>{p.director}</td>
               <td>{p.type}</td>
               <td>{p.kind}</td>

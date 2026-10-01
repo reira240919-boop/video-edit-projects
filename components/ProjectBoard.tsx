@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { Project, Status } from "@/data/sampleProjects";
 import { IS_MINE, TODAY } from "@/lib/mode";
-import { applyStatus, directorNames, filterProjects, sortByDue, type Filter } from "@/lib/projects";
+import { applyStatus, companyNames, directorNames, filterProjects, sortByDue, type Filter } from "@/lib/projects";
+import { writeInvoiceRow } from "@/lib/invoice";
 import { loadProjects, resetProjects, saveProjects } from "@/lib/storage";
 import FilterTabs from "@/components/FilterTabs";
 import ProjectForm from "@/components/ProjectForm";
@@ -66,6 +67,30 @@ export default function ProjectBoard() {
     setForm(null);
   }
 
+  // 請求書のスプレッドシートに1行書き込んで、その行を新しいタブで開く。書けたら請求日を今日にして「請求済み」にする
+  async function issueInvoice(project: Project) {
+    if (!projects) return;
+    if (!project.company) {
+      showToast({ text: "会社名が空です。「編集」で会社名を入れてください", error: true });
+      return;
+    }
+    if (!window.confirm(`「${project.company}」の「${project.name}」を請求書のスプレッドシートに書き込みますか？`)) return;
+    // 書き込みを待ってから開くとブラウザに止められるので、先にタブだけ開いておく
+    const tab = window.open("", "_blank");
+    try {
+      const { row, url } = await writeInvoiceRow(project.id, TODAY);
+      if (tab) tab.location.href = url;
+      else window.open(url, "_blank");
+      update(
+        projects.map((p) => (p.id === project.id ? applyStatus(p, "請求済み", TODAY) : p)),
+        `請求データの${row}行目に書き込みました`,
+      );
+    } catch (e) {
+      tab?.close();
+      showToast({ text: e instanceof Error ? e.message : "スプレッドシートに書き込めませんでした", error: true });
+    }
+  }
+
   function deleteProject(project: Project) {
     if (!projects) return;
     if (!window.confirm(`「${project.name}」を削除しますか？\nこの操作は取り消せません。`)) return;
@@ -97,6 +122,8 @@ export default function ProjectBoard() {
   const skipped = list.filter((p) => p.status === "見送り");
   const tableHandlers = {
     onStatusChange: changeStatus,
+    // 請求書を発行は自分用だけ（見本では出さない）
+    onInvoice: IS_MINE ? issueInvoice : undefined,
     onEdit: (project: Project) => setForm({ mode: "edit", project }),
     onDelete: deleteProject,
   } as const;
@@ -123,6 +150,7 @@ export default function ProjectBoard() {
           // 別の案件の修正に切りかえたとき、中身を入れ直す
           key={form.mode === "edit" ? form.project.id : "new"}
           initial={form.mode === "edit" ? form.project : undefined}
+          companies={companyNames(projects)}
           directors={directorNames(projects)}
           onSave={saveForm}
           onCancel={() => setForm(null)}

@@ -129,6 +129,8 @@
   }
   th:nth-child(2), td:nth-child(2) { left: var(--actions-w); }
   th:nth-child(-n+2) { top: 0; background: #f5ecda; z-index: 2; }
+  /* 案件名の上に小さく出す会社名 */
+  .company { display: block; font-size: 0.8rem; color: #7a6c5c; line-height: 1.3; }
   /* 案件名は決めた幅を超えたら折り返す（スマホではさらに狭く） */
   td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; min-width: 8em; max-width: 14em; line-height: 1.4; }
   @media (max-width: 720px) {
@@ -222,22 +224,22 @@
 
   // 架空のサンプルデータ
   const projects = [
-    { name: "商品紹介ショート", director: "山田", type: "ショート", kind: "継続", status: "編集中",
+    { company: "株式会社サンプル商事", name: "商品紹介ショート", director: "山田", type: "ショート", kind: "継続", status: "編集中",
       start: "2026-09-20", due: "2026-09-30", delivered: null, price: 15000,
       billed: null, paid: null, payDue: "2026-10-31", next: "初稿を送る" },
-    { name: "対談動画", director: "佐藤", type: "横動画", kind: "新規", status: "提出済み",
+    { company: "みどり企画", name: "対談動画", director: "佐藤", type: "横動画", kind: "新規", status: "提出済み",
       start: "2026-09-10", due: "2026-09-29", delivered: null, price: 40000,
       billed: null, paid: null, payDue: "2026-10-31", next: "修正を確認する" },
-    { name: "リール3本", director: "山田", type: "ショート", kind: "継続", status: "納品済み",
+    { company: "株式会社ひかりメディア", name: "リール3本", director: "山田", type: "ショート", kind: "継続", status: "納品済み",
       start: "2026-09-01", due: "2026-09-15", delivered: "2026-09-16", price: 30000,
       billed: null, paid: null, payDue: "2026-10-15", next: "請求書を出す" },
-    { name: "採用動画", director: "鈴木", type: "横動画", kind: "新規", status: "入金済み",
+    { company: "株式会社つばさ", name: "採用動画", director: "鈴木", type: "横動画", kind: "新規", status: "入金済み",
       start: "2026-08-01", due: "2026-08-20", delivered: "2026-08-20", price: 50000,
       billed: "2026-08-21", paid: "2026-09-10", payDue: "2026-09-30", next: "なし" },
-    { name: "イベント報告", director: "佐藤", type: "横動画", kind: "継続", status: "請求済み",
+    { company: "あおぞら合同会社", name: "イベント報告", director: "佐藤", type: "横動画", kind: "継続", status: "請求済み",
       start: "2026-09-05", due: "2026-09-18", delivered: "2026-09-18", price: 35000,
       billed: "2026-09-19", paid: null, payDue: "2026-10-10", next: "入金を確認する" },
-    { name: "企画ショート", director: "高橋", type: "ショート", kind: "新規", status: "見送り",
+    { company: "みどり企画", name: "企画ショート", director: "高橋", type: "ショート", kind: "新規", status: "見送り",
       start: null, due: null, delivered: null, price: null,
       billed: null, paid: null, payDue: null, next: "なし" },
   ];
@@ -342,7 +344,7 @@
 
   const STATUSES = ["相談中", "受注", "編集中", "提出済み", "納品済み", "請求済み", "入金済み", "見送り"];
   const DOTS = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>`;
-  const headers = ["案件名", "担当D", "種類", "区分", "着手日", "状態", "提出予定日", "単価",
+  const headers = ["会社名 / 案件名", "担当D", "種類", "区分", "着手日", "状態", "提出予定日", "単価",
     "請求日", "支払予定日", "入金日", "納品日"];
 
   function tableHtml(list) {
@@ -353,7 +355,7 @@
         STATUSES.map(s => `<option${s === p.status ? " selected" : ""}>${s}</option>`).join("") + `</select>`;
       return `<tr>
         <td class="actions"><button class="icon-btn" type="button" title="編集・削除" aria-label="${p.name}の操作">${DOTS}</button></td>
-        ${cell("案件名", `<strong>${p.name}</strong>`)}
+        ${cell("会社名 / 案件名", (p.company ? `<span class="company">${p.company}</span>` : "") + `<strong>${p.name}</strong>`)}
         ${cell("担当D", p.director)}
         ${cell("種類", p.type)}
         ${cell("区分", p.kind)}

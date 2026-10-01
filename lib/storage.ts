@@ -12,9 +12,15 @@ function initialProjects(): Project[] {
   return sampleProjects.map((p) => ({ ...p }));
 }
 
-// 昔の呼び方で保存されたデータを今の呼び方に直す（「確認待ち」は「提出済み」に変えた）
+// 昔の形で保存されたデータを今の形に直す
+// - 「確認待ち」は「提出済み」に変えた
+// - 会社名の欄はあとから足したので、ないときは空にする
 function migrate(projects: Project[]): Project[] {
-  return projects.map((p) => ((p.status as string) === "確認待ち" ? { ...p, status: "提出済み" } : p));
+  return projects.map((p) => ({
+    ...p,
+    company: p.company ?? null,
+    status: (p.status as string) === "確認待ち" ? "提出済み" : p.status,
+  }));
 }
 
 // 自分用で読めなかったときは、見本に切りかえず失敗として扱う（本物の記録と見本が混ざらないように）
