@@ -65,7 +65,13 @@ export default function ProjectTable({ projects, onStatusChange, onInvoice, onEd
                   : isOverdue(p, TODAY) ? <span className="overdue">{p.due}（過ぎています）</span>
                   : p.due}
               </td>
-              <td>{p.price != null ? yen(p.price) : "-"}</td>
+              <td>
+                {/* 分単価で計算した案件は、単価の上に「600円×16分」と小さく出す */}
+                {p.perMinute != null && p.minutes != null && (
+                  <span className="cell-note">{yen(p.perMinute)}×{p.minutes}分</span>
+                )}
+                {p.price != null ? yen(p.price) : "-"}
+              </td>
               <td>{p.billed ?? "未請求"}</td>
               <td>{p.payDue ?? "-"}</td>
               <td>{p.paid ?? "-"}</td>

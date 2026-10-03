@@ -20,6 +20,8 @@ export type Project = {
   due: string | null;
   delivered: string | null;
   price: number | null;
+  perMinute: number | null; // 分単価（1分あたりの円）。分単価で計算する案件だけ
+  minutes: number | null; // 分数
   billed: string | null;
   paid: string | null;
   payDue: string | null;
@@ -31,21 +33,21 @@ export const SAMPLE_TODAY = "2026-09-28";
 
 export const sampleProjects: Project[] = [
   { id: "p1", company: "株式会社サンプル商事", name: "商品紹介ショート", director: "山田", type: "ショート", kind: "継続", status: "編集中",
-    start: "2026-09-20", due: "2026-09-30", delivered: null, price: 15000,
+    start: "2026-09-20", due: "2026-09-30", delivered: null, price: 15000, perMinute: null, minutes: null,
     billed: null, paid: null, payDue: "2026-10-31", next: "初稿を送る" },
   { id: "p2", company: "みどり企画", name: "対談動画", director: "佐藤", type: "横動画", kind: "新規", status: "提出済み",
-    start: "2026-09-10", due: "2026-09-29", delivered: null, price: 40000,
+    start: "2026-09-10", due: "2026-09-29", delivered: null, price: 40000, perMinute: null, minutes: null,
     billed: null, paid: null, payDue: "2026-10-31", next: "修正を確認する" },
   { id: "p3", company: "株式会社ひかりメディア", name: "リール3本", director: "山田", type: "ショート", kind: "継続", status: "納品済み",
-    start: "2026-09-01", due: "2026-09-15", delivered: "2026-09-16", price: 30000,
+    start: "2026-09-01", due: "2026-09-15", delivered: "2026-09-16", price: 30000, perMinute: null, minutes: null,
     billed: null, paid: null, payDue: "2026-10-15", next: "請求書を出す" },
   { id: "p4", company: "株式会社つばさ", name: "採用動画", director: "鈴木", type: "横動画", kind: "新規", status: "入金済み",
-    start: "2026-08-01", due: "2026-08-20", delivered: "2026-08-20", price: 50000,
+    start: "2026-08-01", due: "2026-08-20", delivered: "2026-08-20", price: 50000, perMinute: null, minutes: null,
     billed: "2026-08-21", paid: "2026-09-10", payDue: "2026-09-30", next: "なし" },
   { id: "p5", company: "あおぞら合同会社", name: "イベント報告", director: "佐藤", type: "横動画", kind: "継続", status: "請求済み",
-    start: "2026-09-05", due: "2026-09-18", delivered: "2026-09-18", price: 35000,
+    start: "2026-09-05", due: "2026-09-18", delivered: "2026-09-18", price: 35000, perMinute: null, minutes: null,
     billed: "2026-09-19", paid: null, payDue: "2026-10-10", next: "入金を確認する" },
   { id: "p6", company: "みどり企画", name: "企画ショート", director: "高橋", type: "ショート", kind: "新規", status: "見送り",
-    start: null, due: null, delivered: null, price: null,
+    start: null, due: null, delivered: null, price: null, perMinute: null, minutes: null,
     billed: null, paid: null, payDue: null, next: "なし" },
 ];

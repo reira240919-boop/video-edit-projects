@@ -45,4 +45,4 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `my-data/` と `.next-mine/` は `.gitignore` 済み。Vercel に `NEXT_PUBLIC_DATA_MODE` を設定しないこと（公開 URL は必ず見本になる）
 - 自分用で読めなかったときは見本に切りかえずエラーを出す（本物の記録と見本を混ぜない）
 - 今日の日付は `lib/mode.ts` の `TODAY`（見本は 2026-09-28 固定、自分用は本当の今日）。自分用では「最初の6件に戻す」を出さない
-- 「請求書を発行」（自分用・納品済みだけ）: `app/api/invoice/route.ts` が請求書のスプレッドシートに1行書く。Google への接続は `lib/googleSheets.ts`（サービスアカウント `sheet-writer`。鍵は `secrets/sheet-writer.json`）。スプレッドシートの ID は `.env.local` の `INVOICE_SPREADSHEET_ID`。鍵も `.env.local` も `.gitignore` 済みで、Vercel には入れない
+- 「請求書を発行」（自分用・納品済みだけ）: `app/api/invoice/route.ts` が請求書のスプレッドシートに1行書く。Google への接続は `lib/googleSheets.ts`（サービスアカウント `sheet-writer`。鍵は `secrets/sheet-writer.json`）。スプレッドシートの ID は `.env.local` の `INVOICE_SPREADSHEET_ID`。鍵も `.env.local` も `.gitignore` 済みで、Vercel には入れない。請求書ツール本体（スプレッドシートの Apps Script・PDF のひな形・列の説明）は `~/Documents/システムツール/動画編集_請求書発行`

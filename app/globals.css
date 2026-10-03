@@ -128,8 +128,8 @@ td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; min-width: 8em; 
   td:nth-child(2) { min-width: 6em; max-width: 8em; }
 }
 
-/* 案件名の上に小さく出す会社名 */
-.company { display: block; font-size: 0.8rem; color: #7a6c5c; line-height: 1.3; }
+/* 案件名の上に小さく出す会社名と、単価の上に小さく出す「600円×16分」 */
+.company, .cell-note { display: block; font-size: 0.8rem; color: #7a6c5c; line-height: 1.3; }
 
 /* 行の「⋯」ボタン */
 .actions { width: var(--actions-w); min-width: var(--actions-w); padding: 6px 8px; }
@@ -286,6 +286,21 @@ td.num, th.num { text-align: right; }
 /* 「請求書を発行」はくすみピンクで目立たせる */
 .row-menu button.invoice { color: #7a3e3e; font-weight: bold; }
 .row-menu button.invoice:hover, .row-menu button.invoice:focus-visible { background: #f1d6d6; }
+
+/* 入力欄の「＋ 分単価で計算」「分単価を使わない」 */
+.link-btn {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  color: #a0605f;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.field input[readonly] { background: #f5ecdb; color: #6e604f; }
+.field-hint { font-size: 0.75rem; color: #7a6c5c; }
 .row-menu button.danger:hover, .row-menu button.danger:focus-visible { background: #f6e9e9; }
 
 /* 自分用の印（見出しの横） */

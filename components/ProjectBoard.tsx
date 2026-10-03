@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Project, Status } from "@/data/sampleProjects";
 import { IS_MINE, TODAY } from "@/lib/mode";
 import { applyStatus, companyNames, directorNames, filterProjects, sortByDue, type Filter } from "@/lib/projects";
-import { writeInvoiceRow } from "@/lib/invoice";
+import { loadPerMinuteCompanies, writeInvoiceRow } from "@/lib/invoice";
 import { loadProjects, resetProjects, saveProjects } from "@/lib/storage";
 import FilterTabs from "@/components/FilterTabs";
 import ProjectForm from "@/components/ProjectForm";
@@ -22,6 +22,8 @@ export default function ProjectBoard() {
   const [filter, setFilter] = useState<Filter>({ kind: "all" });
   const [toast, setToast] = useState<Toast | null>(null);
   const [form, setForm] = useState<FormState>(null);
+  // 分単価で計算する会社（自分用だけ。請求書のスプレッドシートの取引先マスタから読む）
+  const [perMinuteCompanies, setPerMinuteCompanies] = useState<string[]>([]);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // 保存先から読み込む（ブラウザの中にしかないので、開いたあとに読む）
@@ -29,6 +31,7 @@ export default function ProjectBoard() {
     loadProjects()
       .then(setProjects)
       .catch((e) => setLoadError(e instanceof Error ? e.message : "読み込めませんでした"));
+    if (IS_MINE) loadPerMinuteCompanies().then(setPerMinuteCompanies);
   }, []);
 
   // 「保存しました」などを数秒だけ出す
@@ -151,6 +154,7 @@ export default function ProjectBoard() {
           key={form.mode === "edit" ? form.project.id : "new"}
           initial={form.mode === "edit" ? form.project : undefined}
           companies={companyNames(projects)}
+          perMinuteCompanies={perMinuteCompanies}
           directors={directorNames(projects)}
           onSave={saveForm}
           onCancel={() => setForm(null)}

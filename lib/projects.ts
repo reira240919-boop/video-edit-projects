@@ -136,6 +136,17 @@ export function directorNames(projects: Project[]): string[] {
   return [...new Set(projects.map((p) => p.director))];
 }
 
+// 分単価×分数（円。1円未満は四捨五入）
+export function perMinuteTotal(perMinute: number, minutes: number): number {
+  return Math.round(perMinute * minutes);
+}
+
+// 会社名を比べるときは空白（全角も）を無視する（「TCB FILMS 松川」と「TCB FILMS　松川」を同じにする）
+export function sameCompany(a: string, b: string): boolean {
+  const norm = (s: string) => s.replace(/[\s\u3000]/g, "");
+  return norm(a) === norm(b);
+}
+
 // 入れたことのある会社名（入力欄の候補に出す）
 export function companyNames(projects: Project[]): string[] {
   return [...new Set(projects.flatMap((p) => (p.company ? [p.company] : [])))];

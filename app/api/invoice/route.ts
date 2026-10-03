@@ -1,5 +1,6 @@
 // 「請求書を発行」: 案件1件を、請求書のスプレッドシート（「請求データ」シート）の空いている行に書き込む
 // PDF はこれまでどおり、スプレッドシートのメニュー「請求書 → 選択した行のPDFを発行」で作る
+// GET: 取引先マスタの「取引内容」に {分単価} を使っている会社の一覧（入力欄で分単価の欄を最初から出すため）
 // 自分用のときだけ動く。公開 URL では 404 を返す
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 const IS_MINE = process.env.NEXT_PUBLIC_DATA_MODE === "mine";
 const FILE = path.join(process.cwd(), "my-data", "projects.json");
 const SHEET = "請求データ";
+const MASTER_SHEET = "取引先マスタ";
 const SHEET_ID = 0; // 「請求データ」シートの番号（URL の gid）
 
 const notFound = () => new Response("Not Found", { status: 404 });
@@ -27,6 +29,25 @@ function formulas(row: number) {
     J: `=IF($G${row}="","",IF($H${row}="税込",$G${row}-I${row},ROUND(I${row}*0.1,0)))`,
     K: `=IF($G${row}="","",IF($H${row}="税込",$G${row},I${row}+J${row}))`,
   };
+}
+
+export async function GET() {
+  if (!IS_MINE) return notFound();
+  const spreadsheetId = process.env.INVOICE_SPREADSHEET_ID;
+  if (!spreadsheetId) return fail(".env.local に INVOICE_SPREADSHEET_ID がありません", 500);
+  try {
+    const { values = [] } = await sheetsRequest<ValueRange>(
+      spreadsheetId, `/values/${encodeURIComponent(`${MASTER_SHEET}!A1:Z`)}`,
+    );
+    const [header = [], ...rows] = values;
+    const col = header.indexOf("取引内容");
+    const perMinuteCompanies = col === -1 ? [] : rows
+      .filter((r) => (r[col] ?? "").includes("{分単価}") && r[0])
+      .map((r) => r[0]);
+    return Response.json({ perMinuteCompanies });
+  } catch (e) {
+    return fail(e instanceof Error ? e.message : "取引先マスタを読めませんでした", 502);
+  }
 }
 
 export async function POST(request: Request) {
@@ -70,16 +91,22 @@ export async function POST(request: Request) {
       });
     }
 
-    // A〜L 列。日付は "YYYY-MM-DD" で送ると、スプレッドシートが日付として読む
+    // A〜L 列と、R 列（分単価）・S 列（分数）。日付は "YYYY-MM-DD" で送ると、スプレッドシートが日付として読む
+    // M〜Q 列（入金日・送付・PDFリンク・備考）はスプレッドシートで使うので触らない
     const f = formulas(row);
-    const rowValues = [
+    const mainValues = [
       f.A, today, p.delivered ?? "", p.company, honorific, p.name, p.price, "税込", f.I, f.J, f.K, p.payDue ?? "",
     ];
-    await sheetsRequest(
-      spreadsheetId,
-      `/values/${encodeURIComponent(`${SHEET}!A${row}:L${row}`)}?valueInputOption=USER_ENTERED`,
-      { method: "PUT", body: JSON.stringify({ values: [rowValues] }) },
-    );
+    await sheetsRequest(spreadsheetId, "/values:batchUpdate", {
+      method: "POST",
+      body: JSON.stringify({
+        valueInputOption: "USER_ENTERED",
+        data: [
+          { range: `${SHEET}!A${row}:L${row}`, values: [mainValues] },
+          { range: `${SHEET}!R${row}:S${row}`, values: [[p.perMinute ?? "", p.minutes ?? ""]] },
+        ],
+      }),
+    });
 
     // 書いた行を選んだ状態で開く URL（そのままメニューから PDF を発行できる）
     const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=${SHEET_ID}&range=A${row}`;
