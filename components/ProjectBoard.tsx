@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { Project, Status } from "@/data/sampleProjects";
 import { IS_MINE, TODAY } from "@/lib/mode";
-import { applyStatus, companyNames, directorNames, filterProjects, sortByDue, type Filter } from "@/lib/projects";
-import { loadPerMinuteCompanies, writeInvoiceRow } from "@/lib/invoice";
+import { applyStatus, clientNames, companyNames, directorNames, filterProjects, sortByDue, type Filter } from "@/lib/projects";
+import { loadInvoiceTemplates, NO_TEMPLATES, writeInvoiceRow, type InvoiceTemplates } from "@/lib/invoice";
 import { loadProjects, resetProjects, saveProjects } from "@/lib/storage";
 import FilterTabs from "@/components/FilterTabs";
 import ProjectForm from "@/components/ProjectForm";
@@ -22,8 +22,8 @@ export default function ProjectBoard() {
   const [filter, setFilter] = useState<Filter>({ kind: "all" });
   const [toast, setToast] = useState<Toast | null>(null);
   const [form, setForm] = useState<FormState>(null);
-  // 分単価で計算する会社（自分用だけ。請求書のスプレッドシートの取引先マスタから読む）
-  const [perMinuteCompanies, setPerMinuteCompanies] = useState<string[]>([]);
+  // 分単価・クライアント名を使う会社（自分用だけ。請求書のスプレッドシートの取引先マスタから読む）
+  const [templates, setTemplates] = useState<InvoiceTemplates>(NO_TEMPLATES);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // 保存先から読み込む（ブラウザの中にしかないので、開いたあとに読む）
@@ -31,8 +31,13 @@ export default function ProjectBoard() {
     loadProjects()
       .then(setProjects)
       .catch((e) => setLoadError(e instanceof Error ? e.message : "読み込めませんでした"));
-    if (IS_MINE) loadPerMinuteCompanies().then(setPerMinuteCompanies);
   }, []);
+
+  // 入力欄を開くたびに取引先マスタを読み直す（読めなかったときや、取引先マスタに会社を足したときも、開き直さずに反映する）
+  const formOpen = form != null;
+  useEffect(() => {
+    if (IS_MINE && formOpen) loadInvoiceTemplates().then(setTemplates);
+  }, [formOpen]);
 
   // 「保存しました」などを数秒だけ出す
   function showToast(t: Toast) {
@@ -154,7 +159,8 @@ export default function ProjectBoard() {
           key={form.mode === "edit" ? form.project.id : "new"}
           initial={form.mode === "edit" ? form.project : undefined}
           companies={companyNames(projects)}
-          perMinuteCompanies={perMinuteCompanies}
+          clients={clientNames(projects)}
+          perMinuteCompanies={templates.perMinuteCompanies}
           directors={directorNames(projects)}
           onSave={saveForm}
           onCancel={() => setForm(null)}

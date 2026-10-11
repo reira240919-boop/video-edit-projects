@@ -50,7 +50,7 @@ function isPlanned(p: Project): boolean {
   return p.status !== "見送り" && p.paid == null && p.payDue != null;
 }
 
-// その月の 入金済み（入金日の月）と 入金予定（支払予定日の月）の合計
+// その月の 入金済み（入金日の月）と 入金予定（入金予定日の月）の合計
 export function salesOfMonth(projects: Project[], month: string) {
   const paid = projects
     .filter((p) => p.paid?.startsWith(month))
@@ -61,7 +61,7 @@ export function salesOfMonth(projects: Project[], month: string) {
   return { paid, planned, total: paid + planned };
 }
 
-// プルダウンに出す月の一覧（今月＋入金日・支払予定日がある月。新しい月が上）
+// プルダウンに出す月の一覧（今月＋入金日・入金予定日がある月。新しい月が上）
 export function salesMonths(projects: Project[], today: string): string[] {
   const months = new Set<string>([today.slice(0, 7)]);
   for (const p of projects) {
@@ -145,6 +145,11 @@ export function perMinuteTotal(perMinute: number, minutes: number): number {
 export function sameCompany(a: string, b: string): boolean {
   const norm = (s: string) => s.replace(/[\s\u3000]/g, "");
   return norm(a) === norm(b);
+}
+
+// 入れたことのあるクライアント名（入力欄の候補に出す）
+export function clientNames(projects: Project[]): string[] {
+  return [...new Set(projects.flatMap((p) => (p.client ? [p.client] : [])))];
 }
 
 // 入れたことのある会社名（入力欄の候補に出す）

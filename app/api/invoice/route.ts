@@ -6,6 +6,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import type { Project } from "@/data/sampleProjects";
 import { sheetsRequest } from "@/lib/googleSheets";
+import { sameCompany } from "@/lib/projects";
 
 export const dynamic = "force-dynamic";
 
@@ -31,20 +32,25 @@ function formulas(row: number) {
   };
 }
 
+// 取引先マスタの、会社名と「取引内容」のひな形の組
+async function readLineItemTemplates(spreadsheetId: string): Promise<{ company: string; template: string }[]> {
+  const { values = [] } = await sheetsRequest<ValueRange>(
+    spreadsheetId, `/values/${encodeURIComponent(`${MASTER_SHEET}!A1:Z`)}`,
+  );
+  const [header = [], ...rows] = values;
+  const col = header.indexOf("取引内容");
+  if (col === -1) return [];
+  return rows.filter((r) => r[0]).map((r) => ({ company: r[0], template: r[col] ?? "" }));
+}
+
 export async function GET() {
   if (!IS_MINE) return notFound();
   const spreadsheetId = process.env.INVOICE_SPREADSHEET_ID;
   if (!spreadsheetId) return fail(".env.local に INVOICE_SPREADSHEET_ID がありません", 500);
   try {
-    const { values = [] } = await sheetsRequest<ValueRange>(
-      spreadsheetId, `/values/${encodeURIComponent(`${MASTER_SHEET}!A1:Z`)}`,
-    );
-    const [header = [], ...rows] = values;
-    const col = header.indexOf("取引内容");
-    const perMinuteCompanies = col === -1 ? [] : rows
-      .filter((r) => (r[col] ?? "").includes("{分単価}") && r[0])
-      .map((r) => r[0]);
-    return Response.json({ perMinuteCompanies });
+    const templates = await readLineItemTemplates(spreadsheetId);
+    const using = (word: string) => templates.filter((t) => t.template.includes(word)).map((t) => t.company);
+    return Response.json({ perMinuteCompanies: using("{分単価}") });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "取引先マスタを読めませんでした", 502);
   }
@@ -71,6 +77,17 @@ export async function POST(request: Request) {
   if (p.price == null) return fail("単価が空です。「編集」で単価を入れてから発行してください");
 
   try {
+    // その会社の取引内容で、クライアント名・動画の種類を使うか（使う会社だけ T・U 列に書く）
+    const template = (await readLineItemTemplates(spreadsheetId))
+      .find((t) => sameCompany(t.company, p.company!))?.template ?? "";
+    const usesClient = template.includes("{クライアント名}");
+    const usesVideoType = template.includes("{動画の種類}");
+    // 前に保存した案件は種類が「横動画」のままのことがある（画面で開いて保存すると「ロング」になる）
+    const videoType = (p.type as string) === "横動画" ? "ロング" : p.type;
+    if (usesClient && !p.client) {
+      return fail("クライアント名が空です。「編集」でクライアント名を入れてから発行してください");
+    }
+
     // 上から見て、発行日・取引先名・案件名・入力金額がどれも空の最初の行に書く
     const { values = [] } = await sheetsRequest<ValueRange>(
       spreadsheetId, `/values/${encodeURIComponent(`${SHEET}!A2:G`)}`,
@@ -91,7 +108,7 @@ export async function POST(request: Request) {
       });
     }
 
-    // A〜L 列と、R 列（分単価）・S 列（分数）。日付は "YYYY-MM-DD" で送ると、スプレッドシートが日付として読む
+    // A〜L 列と、R 列（分単価）・S 列（分数）・T 列（クライアント名）・U 列（動画の種類: ロング / ショート）。日付は "YYYY-MM-DD" で送ると、スプレッドシートが日付として読む
     // M〜Q 列（入金日・送付・PDFリンク・備考）はスプレッドシートで使うので触らない
     const f = formulas(row);
     const mainValues = [
@@ -103,7 +120,10 @@ export async function POST(request: Request) {
         valueInputOption: "USER_ENTERED",
         data: [
           { range: `${SHEET}!A${row}:L${row}`, values: [mainValues] },
-          { range: `${SHEET}!R${row}:S${row}`, values: [[p.perMinute ?? "", p.minutes ?? ""]] },
+          {
+            range: `${SHEET}!R${row}:U${row}`,
+            values: [[p.perMinute ?? "", p.minutes ?? "", usesClient ? p.client : "", usesVideoType ? videoType : ""]],
+          },
         ],
       }),
     });

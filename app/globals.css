@@ -236,14 +236,9 @@ td.num, th.num { text-align: right; }
 .project-form h2 { font-size: 1.05rem; margin: 0 0 12px; }
 /* 広い画面では横に並べ、狭い画面では1列になる */
 .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px 16px; }
-/* 自分用の入力欄は2行に収める（1行目: 会社名〜着手日、2行目: 粗編提出日〜納品日）。
-   横を28等分し、担当D・種類・区分・状態は狭く（w3・w4）、会社名・案件名・着手日は広く（w5）、ほかは4つ分 */
+/* 自分用の入力欄は、全部同じ幅で5つずつ×3行（会社名〜種類 / 区分〜初稿提出日 / 単価〜納品日） */
 @media (min-width: 900px) {
-  .mine-form .form-grid { grid-template-columns: repeat(28, minmax(0, 1fr)); }
-  .mine-form .field { grid-column: span 4; }
-  .mine-form .field.w3 { grid-column: span 3; }
-  .mine-form .field.w4 { grid-column: span 4; }
-  .mine-form .field.w5 { grid-column: span 5; }
+  .mine-form .form-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 .field { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #6e604f; }
 .field em { font-style: normal; font-size: 0.75rem; color: #a04040; margin-left: 6px; }

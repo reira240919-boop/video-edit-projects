@@ -8,6 +8,7 @@ import { perMinuteTotal, sameCompany } from "@/lib/projects";
 // 入力欄の中身（どれも文字で持ち、保存するときに案件の形に直す）
 type Values = {
   company: string;
+  client: string;
   name: string;
   director: string;
   type: Project["type"];
@@ -26,13 +27,13 @@ type Values = {
 };
 
 const EMPTY: Values = {
-  company: "", name: "", director: "", type: "ショート", kind: "新規", start: "", roughDue: "", status: "相談中",
+  company: "", client: "", name: "", director: "", type: "ショート", kind: "新規", start: "", roughDue: "", status: "相談中",
   due: "", price: "", perMinute: "", minutes: "", billed: "", payDue: "", paid: "", delivered: "",
 };
 
 function toValues(p: Project): Values {
   return {
-    company: p.company ?? "", name: p.name, director: p.director, type: p.type, kind: p.kind, start: p.start ?? "",
+    company: p.company ?? "", client: p.client ?? "", name: p.name, director: p.director, type: p.type, kind: p.kind, start: p.start ?? "",
     roughDue: p.roughDue ?? "",
     status: p.status, due: p.due ?? "", price: p.price != null ? String(p.price) : "",
     perMinute: p.perMinute != null ? String(p.perMinute) : "", minutes: p.minutes != null ? String(p.minutes) : "",
@@ -83,9 +84,12 @@ function validate(v: Values, usePerMinute: boolean): Errors {
 
 // 追加・修正の入力欄。initial があれば修正（中身入りで開く）
 // perMinuteCompanies: 請求書の取引内容に {分単価} を使う会社（この会社なら分単価の欄を最初から出す）
-export default function ProjectForm({ initial, companies, perMinuteCompanies, directors, onSave, onCancel }: {
+export default function ProjectForm({
+  initial, companies, clients, perMinuteCompanies, directors, onSave, onCancel,
+}: {
   initial?: Project;
   companies: string[];
+  clients: string[];
   perMinuteCompanies: string[];
   directors: string[];
   onSave: (project: Project) => void;
@@ -126,6 +130,7 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
     onSave({
       id: initial?.id ?? crypto.randomUUID(),
       company: values.company.trim() || null,
+      client: IS_MINE ? values.client.trim() || null : null,
       name: values.name.trim(),
       director: values.director.trim(),
       type: values.type,
@@ -157,7 +162,7 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
     <form className={IS_MINE ? "project-form mine-form" : "project-form"} onSubmit={handleSubmit} noValidate>
       <h2>{initial ? "案件を修正" : "案件を追加"}</h2>
       <div className="form-grid">
-        <label className="field w5">
+        <label className="field">
           <span>会社名</span>
           <input
             name="company" value={values.company} list="company-list" autoFocus
@@ -168,7 +173,21 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
             {companies.map((c) => <option key={c} value={c} />)}
           </datalist>
         </label>
-        <label className="field w5">
+        {/* クライアント名は自分用だけ（請求書の取引内容で使う会社のため） */}
+        {IS_MINE && (
+          <label className="field">
+            <span>クライアント名</span>
+            <input
+              name="client" value={values.client} list="client-list" placeholder="例: 〇〇株式会社"
+              onChange={(e) => set("client", e.target.value)}
+            />
+            {/* 入れたことのあるクライアント名を候補に出す */}
+            <datalist id="client-list">
+              {clients.map((c) => <option key={c} value={c} />)}
+            </datalist>
+          </label>
+        )}
+        <label className="field">
           <span>案件名<em>必須</em></span>
           <input
             name="name" value={values.name}
@@ -177,7 +196,7 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
           />
           {errors.name && <small className="field-error">{errors.name}</small>}
         </label>
-        <label className="field w3">
+        <label className="field">
           <span>担当D<em>必須</em></span>
           <input
             name="director" value={values.director} list="director-list"
@@ -190,14 +209,14 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
           </datalist>
           {errors.director && <small className="field-error">{errors.director}</small>}
         </label>
-        <label className="field w3">
+        <label className="field">
           <span>種類</span>
           <select name="type" value={values.type} onChange={(e) => set("type", e.target.value as Values["type"])}>
             <option value="ショート">ショート</option>
-            <option value="横動画">横動画</option>
+            <option value="ロング">ロング</option>
           </select>
         </label>
-        <label className="field w3">
+        <label className="field">
           <span>区分</span>
           <select name="kind" value={values.kind} onChange={(e) => set("kind", e.target.value as Values["kind"])}>
             <option value="新規">新規</option>
@@ -206,13 +225,13 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
         </label>
         {/* 表と同じ順番。自分用は 状態 → 着手日 → 粗編提出日 → 初稿提出日、見本は 着手日 → 状態 → 提出予定日 */}
         {!IS_MINE && dateField("start", "着手日")}
-        <label className="field w4">
+        <label className="field">
           <span>状態<em>必須</em></span>
           <select name="status" value={values.status} onChange={(e) => set("status", e.target.value as Status)}>
             {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </label>
-        {IS_MINE && dateField("start", "着手日", "w5")}
+        {IS_MINE && dateField("start", "着手日")}
         {IS_MINE && dateField("roughDue", "粗編提出日")}
         {dateField("due", IS_MINE ? "初稿提出日" : "提出予定日")}
         <label className="field">
@@ -253,7 +272,7 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
           </>
         )}
         {dateField("billed", "請求日")}
-        {dateField("payDue", "支払予定日")}
+        {dateField("payDue", "入金予定日")}
         {dateField("paid", "入金日")}
         {dateField("delivered", "納品日")}
       </div>
