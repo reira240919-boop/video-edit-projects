@@ -4,7 +4,7 @@ import { isOverdue, yen } from "@/lib/projects";
 import RowMenu from "@/components/RowMenu";
 
 const HEADERS = [
-  "会社名 / 案件名", "担当D", "種類", "区分", "着手日", "状態", "提出予定日", "単価",
+  "会社名 / 案件名", "担当D", "種類", "区分", "状態", "着手日", "粗編提出日", "初稿提出日", "単価",
   "請求日", "支払予定日", "入金日", "納品日",
 ];
 
@@ -46,7 +46,6 @@ export default function ProjectTable({ projects, onStatusChange, onInvoice, onEd
               <td>{p.director}</td>
               <td>{p.type}</td>
               <td>{p.kind}</td>
-              <td>{p.start ?? "-"}</td>
               <td>
                 {/* 状態はその場で選ぶ。選ぶとすぐ保存する */}
                 <select
@@ -60,6 +59,8 @@ export default function ProjectTable({ projects, onStatusChange, onInvoice, onEd
                   ))}
                 </select>
               </td>
+              <td>{p.start ?? "-"}</td>
+              <td>{p.roughDue ?? "-"}</td>
               <td>
                 {p.due == null ? "-"
                   : isOverdue(p, TODAY) ? <span className="overdue">{p.due}（過ぎています）</span>

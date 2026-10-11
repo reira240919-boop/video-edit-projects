@@ -12,6 +12,7 @@ type Values = {
   type: Project["type"];
   kind: Project["kind"];
   start: string;
+  roughDue: string;
   status: Status;
   due: string;
   price: string;
@@ -24,13 +25,14 @@ type Values = {
 };
 
 const EMPTY: Values = {
-  company: "", name: "", director: "", type: "ショート", kind: "新規", start: "", status: "相談中",
+  company: "", name: "", director: "", type: "ショート", kind: "新規", start: "", roughDue: "", status: "相談中",
   due: "", price: "", perMinute: "", minutes: "", billed: "", payDue: "", paid: "", delivered: "",
 };
 
 function toValues(p: Project): Values {
   return {
     company: p.company ?? "", name: p.name, director: p.director, type: p.type, kind: p.kind, start: p.start ?? "",
+    roughDue: p.roughDue ?? "",
     status: p.status, due: p.due ?? "", price: p.price != null ? String(p.price) : "",
     perMinute: p.perMinute != null ? String(p.perMinute) : "", minutes: p.minutes != null ? String(p.minutes) : "",
     billed: p.billed ?? "", payDue: p.payDue ?? "", paid: p.paid ?? "", delivered: p.delivered ?? "",
@@ -128,6 +130,7 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
       type: values.type,
       kind: values.kind,
       start: date(values.start),
+      roughDue: date(values.roughDue),
       status: values.status,
       due: date(values.due),
       // 分単価と分数があれば、単価はその掛け算
@@ -142,7 +145,7 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
     });
   }
 
-  const dateField = (key: "start" | "due" | "billed" | "payDue" | "paid" | "delivered", label: string) => (
+  const dateField = (key: "start" | "roughDue" | "due" | "billed" | "payDue" | "paid" | "delivered", label: string) => (
     <label className="field">
       <span>{label}</span>
       <input type="date" name={key} value={values[key]} onChange={(e) => set(key, e.target.value)} />
@@ -200,14 +203,15 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
             <option value="継続">継続</option>
           </select>
         </label>
-        {dateField("start", "着手日")}
         <label className="field">
           <span>状態<em>必須</em></span>
           <select name="status" value={values.status} onChange={(e) => set("status", e.target.value as Status)}>
             {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </label>
-        {dateField("due", "提出予定日")}
+        {dateField("start", "着手日")}
+        {dateField("roughDue", "粗編提出日")}
+        {dateField("due", "初稿提出日")}
         <label className="field">
           <span>単価（円）</span>
           <input
