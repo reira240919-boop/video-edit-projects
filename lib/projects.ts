@@ -82,7 +82,7 @@ function isDone(p: Project): boolean {
   return p.status === "入金済み";
 }
 
-// 初稿提出日が近い順（予定日なしは最後）。完了したものはその下
+// 提出予定日が近い順（予定日なしは最後）。完了したものはその下
 export function sortByDue(projects: Project[]): Project[] {
   return [...projects].sort((a, b) => {
     if (isDone(a) !== isDone(b)) return isDone(a) ? 1 : -1;
@@ -113,7 +113,7 @@ function isMyTurn(p: Project): boolean {
   return STATUSES.indexOf(p.status) < STATUSES.indexOf("提出済み");
 }
 
-// 今週提出: 自分の番で、初稿提出日が今日から7日以内
+// 今週提出: 自分の番で、提出予定日が今日から7日以内
 function isDueThisWeek(p: Project, today: string): boolean {
   return isMyTurn(p) && p.due != null && p.due >= today && p.due <= addDays(today, 7);
 }
@@ -152,7 +152,7 @@ export function companyNames(projects: Project[]): string[] {
   return [...new Set(projects.flatMap((p) => (p.company ? [p.company] : [])))];
 }
 
-// 自分の番なのに初稿提出日を過ぎている（提出済みはクライアントの番なので赤くしない）
+// 自分の番なのに提出予定日を過ぎている（提出済みはクライアントの番なので赤くしない）
 export function isOverdue(p: Project, today: string): boolean {
   return isMyTurn(p) && p.due != null && p.due < today;
 }

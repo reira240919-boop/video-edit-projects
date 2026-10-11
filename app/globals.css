@@ -122,8 +122,6 @@ th:nth-child(-n+2), td:nth-child(-n+2) {
 th:nth-child(2), td:nth-child(2) { left: var(--actions-w); }
 th:nth-child(-n+2) { top: 0; background: #f5ecda; z-index: 2; }
 
-/* 担当D・種類・区分・状態（左から3〜6列目）は短いので、左右の余白を詰める */
-th:nth-child(n+3):nth-child(-n+6), td:nth-child(n+3):nth-child(-n+6) { padding-left: 6px; padding-right: 6px; }
 /* 案件名は決めた幅を超えたら折り返す（スマホではさらに狭く） */
 td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; min-width: 8em; max-width: 14em; line-height: 1.4; }
 @media (max-width: 720px) {
@@ -132,6 +130,12 @@ td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; min-width: 8em; 
 
 /* 案件名の上に小さく出す会社名と、単価の上に小さく出す「600円×16分」 */
 .company, .cell-note { display: block; font-size: 0.8rem; color: #7a6c5c; line-height: 1.3; }
+
+/* 自分用の表（列が1つ多い）: 担当D・種類・区分・状態（左から3〜6列目）は左右の余白と状態の丸を細くし、
+   空いた分だけ案件名を長く1行に収める（長い案件名で会社名と合わせて3行にならないように） */
+.mine-layout th:nth-child(n+3):nth-child(-n+6), .mine-layout td:nth-child(n+3):nth-child(-n+6) { padding-left: 4px; padding-right: 4px; }
+.mine-layout .status-select { font-size: 0.85rem; padding: 2px 18px 2px 7px; background-position: right 9px center, right 5px center; }
+.mine-layout td:nth-child(2) { max-width: 18em; }
 
 /* 行の「⋯」ボタン */
 .actions { width: var(--actions-w); min-width: var(--actions-w); padding: 6px 8px; }
@@ -175,12 +179,12 @@ td.num, th.num { text-align: right; }
   border: none;
   font: inherit;
   font-size: 0.9rem;
-  padding: 2px 20px 2px 8px;
+  padding: 2px 24px 2px 10px;
   cursor: pointer;
   /* 右に小さな下向きの矢印 */
   background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
     linear-gradient(135deg, currentColor 50%, transparent 50%);
-  background-position: right 10px center, right 6px center;
+  background-position: right 12px center, right 8px center;
   background-size: 4px 4px, 4px 4px;
   background-repeat: no-repeat;
 }
@@ -232,6 +236,15 @@ td.num, th.num { text-align: right; }
 .project-form h2 { font-size: 1.05rem; margin: 0 0 12px; }
 /* 広い画面では横に並べ、狭い画面では1列になる */
 .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px 16px; }
+/* 自分用の入力欄は2行に収める（1行目: 会社名〜着手日、2行目: 粗編提出日〜納品日）。
+   横を28等分し、担当D・種類・区分・状態は狭く（w3・w4）、会社名・案件名・着手日は広く（w5）、ほかは4つ分 */
+@media (min-width: 900px) {
+  .mine-form .form-grid { grid-template-columns: repeat(28, minmax(0, 1fr)); }
+  .mine-form .field { grid-column: span 4; }
+  .mine-form .field.w3 { grid-column: span 3; }
+  .mine-form .field.w4 { grid-column: span 4; }
+  .mine-form .field.w5 { grid-column: span 5; }
+}
 .field { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #6e604f; }
 .field em { font-style: normal; font-size: 0.75rem; color: #a04040; margin-left: 6px; }
 .field input, .field select {
@@ -245,6 +258,24 @@ td.num, th.num { text-align: right; }
   width: 100%;
 }
 .field input.invalid { border-color: #a04040; }
+/* 入力欄のプルダウン（種類・区分・状態）と、候補が出る欄（会社名・担当D）は、同じ細い「∨」をいつも出す。
+   右端から少し内側に置く */
+.field select, .field input[list] {
+  appearance: none;
+  padding-right: 30px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%236e604f' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  background-size: 12px 12px;
+}
+/* 候補の欄はブラウザの「▼」を見えなくして、上の「∨」の場所に重ねる（押すと候補が開く） */
+.field input[list]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  width: 22px;
+  margin-right: -25px;
+  cursor: pointer;
+}
+
 .field-error { color: #a04040; font-size: 0.8rem; }
 .form-actions { display: flex; gap: 8px; margin-top: 16px; }
 

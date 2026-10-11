@@ -37,7 +37,7 @@ export const sampleProjects: Project[] = [
     start: "2026-09-20", roughDue: null, due: "2026-09-30", delivered: null, price: 15000, perMinute: null, minutes: null,
     billed: null, paid: null, payDue: "2026-10-31", next: "初稿を送る" },
   { id: "p2", company: "みどり企画", name: "対談動画", director: "佐藤", type: "横動画", kind: "新規", status: "提出済み",
-    start: "2026-09-10", roughDue: "2026-09-20", due: "2026-09-29", delivered: null, price: 40000, perMinute: null, minutes: null,
+    start: "2026-09-10", roughDue: null, due: "2026-09-29", delivered: null, price: 40000, perMinute: null, minutes: null,
     billed: null, paid: null, payDue: "2026-10-31", next: "修正を確認する" },
   { id: "p3", company: "株式会社ひかりメディア", name: "リール3本", director: "山田", type: "ショート", kind: "継続", status: "納品済み",
     start: "2026-09-01", roughDue: null, due: "2026-09-15", delivered: "2026-09-16", price: 30000, perMinute: null, minutes: null,

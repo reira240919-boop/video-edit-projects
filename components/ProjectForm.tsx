@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { STATUSES, type Project, type Status } from "@/data/sampleProjects";
+import { IS_MINE } from "@/lib/mode";
 import { perMinuteTotal, sameCompany } from "@/lib/projects";
 
 // 入力欄の中身（どれも文字で持ち、保存するときに案件の形に直す）
@@ -145,18 +146,18 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
     });
   }
 
-  const dateField = (key: "start" | "roughDue" | "due" | "billed" | "payDue" | "paid" | "delivered", label: string) => (
-    <label className="field">
+  const dateField = (key: "start" | "roughDue" | "due" | "billed" | "payDue" | "paid" | "delivered", label: string, width = "") => (
+    <label className={`field ${width}`.trim()}>
       <span>{label}</span>
       <input type="date" name={key} value={values[key]} onChange={(e) => set(key, e.target.value)} />
     </label>
   );
 
   return (
-    <form className="project-form" onSubmit={handleSubmit} noValidate>
+    <form className={IS_MINE ? "project-form mine-form" : "project-form"} onSubmit={handleSubmit} noValidate>
       <h2>{initial ? "案件を修正" : "案件を追加"}</h2>
       <div className="form-grid">
-        <label className="field">
+        <label className="field w5">
           <span>会社名</span>
           <input
             name="company" value={values.company} list="company-list" autoFocus
@@ -167,7 +168,7 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
             {companies.map((c) => <option key={c} value={c} />)}
           </datalist>
         </label>
-        <label className="field">
+        <label className="field w5">
           <span>案件名<em>必須</em></span>
           <input
             name="name" value={values.name}
@@ -176,7 +177,7 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
           />
           {errors.name && <small className="field-error">{errors.name}</small>}
         </label>
-        <label className="field">
+        <label className="field w3">
           <span>担当D<em>必須</em></span>
           <input
             name="director" value={values.director} list="director-list"
@@ -189,29 +190,31 @@ export default function ProjectForm({ initial, companies, perMinuteCompanies, di
           </datalist>
           {errors.director && <small className="field-error">{errors.director}</small>}
         </label>
-        <label className="field">
+        <label className="field w3">
           <span>種類</span>
           <select name="type" value={values.type} onChange={(e) => set("type", e.target.value as Values["type"])}>
             <option value="ショート">ショート</option>
             <option value="横動画">横動画</option>
           </select>
         </label>
-        <label className="field">
+        <label className="field w3">
           <span>区分</span>
           <select name="kind" value={values.kind} onChange={(e) => set("kind", e.target.value as Values["kind"])}>
             <option value="新規">新規</option>
             <option value="継続">継続</option>
           </select>
         </label>
-        <label className="field">
+        {/* 表と同じ順番。自分用は 状態 → 着手日 → 粗編提出日 → 初稿提出日、見本は 着手日 → 状態 → 提出予定日 */}
+        {!IS_MINE && dateField("start", "着手日")}
+        <label className="field w4">
           <span>状態<em>必須</em></span>
           <select name="status" value={values.status} onChange={(e) => set("status", e.target.value as Status)}>
             {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </label>
-        {dateField("start", "着手日")}
-        {dateField("roughDue", "粗編提出日")}
-        {dateField("due", "初稿提出日")}
+        {IS_MINE && dateField("start", "着手日", "w5")}
+        {IS_MINE && dateField("roughDue", "粗編提出日")}
+        {dateField("due", IS_MINE ? "初稿提出日" : "提出予定日")}
         <label className="field">
           <span>単価（円）</span>
           <input
