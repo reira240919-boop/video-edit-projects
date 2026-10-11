@@ -24,7 +24,7 @@ const HEADERS: Record<Column, string> = {
   due: IS_MINE ? "初稿提出日" : "提出予定日",
   price: "単価",
   billed: "請求日",
-  payDue: "支払予定日",
+  payDue: "入金予定日",
   paid: "入金日",
   delivered: "納品日",
 };

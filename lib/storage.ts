@@ -14,14 +14,17 @@ function initialProjects(): Project[] {
 
 // 昔の形で保存されたデータを今の形に直す
 // - 「確認待ち」は「提出済み」に変えた
-// - 会社名・分単価・分数・粗編提出日の欄はあとから足したので、ないときは空にする
+// - 会社名・クライアント名・分単価・分数・粗編提出日の欄はあとから足したので、ないときは空にする
+// - 種類の「横動画」は「ロング」に変えた
 function migrate(projects: Project[]): Project[] {
   return projects.map((p) => ({
     ...p,
     company: p.company ?? null,
+    client: p.client ?? null,
     perMinute: p.perMinute ?? null,
     minutes: p.minutes ?? null,
     roughDue: p.roughDue ?? null,
+    type: (p.type as string) === "横動画" ? "ロング" : p.type,
     status: (p.status as string) === "確認待ち" ? "提出済み" : p.status,
   }));
 }
