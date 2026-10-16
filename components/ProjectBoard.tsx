@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Project, Status } from "@/data/sampleProjects";
 import { IS_MINE, TODAY } from "@/lib/mode";
-import { applyStatus, clientNames, companyNames, directorNames, filterProjects, sortByDue, type Filter } from "@/lib/projects";
+import { applyStatus, clientNames, companyNames, directorNames, filterProjectsInMonth, monthOf, startMonth, startMonths, sortByDue, type Filter } from "@/lib/projects";
 import { loadInvoiceTemplates, NO_TEMPLATES, writeInvoiceRow, type InvoiceTemplates } from "@/lib/invoice";
 import { loadProjects, resetProjects, saveProjects } from "@/lib/storage";
 import FilterTabs from "@/components/FilterTabs";
@@ -20,6 +20,8 @@ export default function ProjectBoard() {
   const [projects, setProjects] = useState<Project[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>({ kind: "all" });
+  // 着手月（最初は今月）。着手日がこの月の案件を出す（着手日が空なら今月に入れる）
+  const [month, setMonth] = useState(monthOf(TODAY));
   const [toast, setToast] = useState<Toast | null>(null);
   const [form, setForm] = useState<FormState>(null);
   // 分単価・クライアント名を使う会社（自分用だけ。請求書のスプレッドシートの取引先マスタから読む）
@@ -67,8 +69,9 @@ export default function ProjectBoard() {
     if (!projects || !form) return;
     if (form.mode === "add") {
       update([...projects, project]);
-      // 絞り込みで隠れないように「すべて」に戻す
+      // 絞り込みで隠れないように「すべて」に戻し、着手月もその案件が見える月にする
       setFilter({ kind: "all" });
+      setMonth(startMonth(project, TODAY));
     } else {
       update(projects.map((p) => (p.id === project.id ? project : p)));
     }
@@ -124,8 +127,8 @@ export default function ProjectBoard() {
     return <p className="loading">読み込み中…</p>;
   }
 
-  // 絞り込みは2つの表の両方にかける（上の数字は全件から計算する）
-  const list = filterProjects(projects, filter, TODAY);
+  // 絞り込みと着手月は2つの表の両方にかける（上の数字は全件から計算する）。今週提出・未入金には着手月をかけない
+  const list = filterProjectsInMonth(projects, filter, month, TODAY);
   const active = list.filter((p) => p.status !== "見送り");
   const skipped = list.filter((p) => p.status === "見送り");
   const tableHandlers = {
@@ -140,7 +143,14 @@ export default function ProjectBoard() {
     <>
       <SummaryBoxes projects={projects} today={TODAY} />
       <div className="toolbar">
-        <FilterTabs filter={filter} directors={directorNames(projects)} onChange={setFilter} />
+        <FilterTabs
+          filter={filter}
+          directors={directorNames(projects)}
+          onChange={setFilter}
+          month={month}
+          months={startMonths(projects, TODAY)}
+          onMonthChange={setMonth}
+        />
         <div className="toolbar-actions">
           {/* 見本だけ。自分用で押すと本物の記録が消えるので出さない */}
           {!IS_MINE && (

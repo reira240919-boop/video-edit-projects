@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import type { Project } from "@/data/sampleProjects";
-import { countInProgress, monthLabel, salesMonths, salesOfMonth, sumUnpaid, yen } from "@/lib/projects";
+import { countInProgress, monthLabel, monthOf, salesMonths, salesOfMonth, sumUnpaid, yen } from "@/lib/projects";
 
 // 上の数字（進行中の件数・納品済みで未入金・月ごとの売上）
 // 絞り込みに関係なく、全件から計算する
 export default function SummaryBoxes({ projects, today }: { projects: Project[]; today: string }) {
   const months = salesMonths(projects, today);
-  const [month, setMonth] = useState(today.slice(0, 7)); // 最初は今月
+  const [month, setMonth] = useState(monthOf(today)); // 最初は今月
   const sales = salesOfMonth(projects, month);
 
   return (
