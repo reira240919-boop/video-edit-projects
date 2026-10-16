@@ -5,16 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>動画編集 案件一覧</title>
 <style>
-  /* 色は5つだけ。メインの色（--accent）と、文字・背景・線・薄い文字 */
+  /* メインの色（--accent）を1つ決め、うすい色・濃い色はそこから作る。ほかは文字・背景・線・薄い文字だけ */
   :root {
     --accent: #a30052;
-    --accent-tint: #f6e6ee; /* メインの色をうすくした背景（ボタンに乗せたとき） */
+    --accent-hover: color-mix(in srgb, var(--accent) 4%, white); /* 表の行にマウスを乗せたとき */
+    --accent-tint: color-mix(in srgb, var(--accent) 10%, white); /* ボタンにマウスを乗せたとき */
+    --accent-soft: color-mix(in srgb, var(--accent) 20%, white);
+    --accent-mid: color-mix(in srgb, var(--accent) 35%, white);
+    --accent-dark: color-mix(in srgb, var(--accent) 70%, black);
+    --on-accent: #ffffff; /* メインの色の上の文字 */
     --ink: #2a2428;
     --bg: #f6f4f5;
     --card: #ffffff;
     --line: #ebe6e9;
     --muted: #8a8287;
+    --muted-strong: #5a5357;
     --danger: #b3261e; /* 削除・エラーだけ */
+    --danger-tint: color-mix(in srgb, var(--danger) 8%, white);
   }
 
   * { box-sizing: border-box; }
@@ -109,24 +116,22 @@
     color: var(--accent);
     cursor: pointer;
   }
-  .tab + .tab, .tab + .tab-select, .tab-select + .tab-select { border-left: 1px solid var(--accent); }
-  /* プルダウンは右に小さな「∨」 */
+  .tabs > * + * { border-left: 1px solid var(--accent); }
+  /* プルダウンは右に小さな下向きの矢印（文字の色に合わせて、選んだときは白になる） */
   .tab-select {
     appearance: none;
     padding-right: 32px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%23a30052' stroke-width='1.6'/%3E%3C/svg%3E");
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position: right 16px center, right 12px center;
+    background-size: 4px 4px, 4px 4px;
     background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 11px 11px;
   }
   .tab:hover, .tab-select:hover { background-color: var(--accent-tint); }
   /* 押したあとにブラウザが付ける濃い太枠は出さない。キーボード操作のときだけ枠を出す */
   .tab:focus, .tab-select:focus { outline: none; }
   .tab:focus-visible, .tab-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .tab.active, .tab-select.active { background-color: var(--accent); color: #fff; }
-  .tab-select.active {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%23ffffff' stroke-width='1.6'/%3E%3C/svg%3E");
-  }
+  .tab.active, .tab-select.active { background-color: var(--accent); color: var(--on-accent); }
   .tab-select option { color: var(--ink); background: var(--card); }
   /* 今週提出・未入金を選んでいる間の着手月（押せない） */
   .tab-select:disabled { opacity: 0.4; cursor: not-allowed; background-color: transparent; }
@@ -139,7 +144,7 @@
   }
   table { width: max-content; min-width: 100%; border-collapse: collapse; }
   th, td {
-    padding: 12px 12px;
+    padding: 12px;
     text-align: left;
     border-bottom: 1px solid var(--line);
     font-size: 0.9rem;
@@ -147,7 +152,7 @@
     white-space: nowrap;
   }
   tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover td { background: #fcf7fa; }
+  tbody tr:hover td { background: var(--accent-hover); }
   th {
     background: var(--card);
     font-size: 0.72rem;
@@ -167,7 +172,7 @@
     z-index: 1;
   }
   th:nth-child(2), td:nth-child(2) { left: var(--actions-w); }
-  th:nth-child(-n+2) { top: 0; background: var(--card); z-index: 2; }
+  th:nth-child(-n+2) { z-index: 2; }
 
   /* 案件名は決めた幅を超えたら折り返す（スマホではさらに狭く） */
   td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; min-width: 8em; max-width: 14em; line-height: 1.4; font-weight: 700; }
@@ -181,7 +186,7 @@
   /* 自分用の表（列が1つ多い）: 担当D・種類・区分・状態（左から3〜6列目）は左右の余白と状態の丸を細くし、
      空いた分だけ案件名を長く1行に収める（長い案件名で会社名と合わせて3行にならないように） */
   .mine-layout th:nth-child(n+3):nth-child(-n+6), .mine-layout td:nth-child(n+3):nth-child(-n+6) { padding-left: 4px; padding-right: 4px; }
-  .mine-layout .status-select { font-size: 0.85rem; padding: 2px 18px 2px 7px; background-position: right 9px center, right 5px center; }
+  .mine-layout .status-select { padding: 2px 18px 2px 7px; background-position: right 9px center, right 5px center; }
   .mine-layout td:nth-child(2) { max-width: 18em; }
 
   /* 行の「⋯」ボタン */
@@ -208,26 +213,21 @@
   .loading { color: var(--muted); padding: 16px 0; }
 
   /* 状態。塗りはやめて、左の太い線の濃さで分ける（作業中はメインの色、お金の段階はグレー） */
-  .status { display: inline-block; padding: 2px 0 2px 10px; border-left: 4px solid; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; color: var(--ink); }
-  .st-相談中 { border-left-color: #edccdc; }
-  .st-受注 { border-left-color: #dfa6c2; }
+  .status { display: inline-block; padding: 2px 0 2px 10px; border: 0 solid; border-left-width: 4px; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; color: var(--ink); }
+  .st-相談中 { border-left-color: var(--accent-soft); }
+  .st-受注 { border-left-color: var(--accent-mid); }
   .st-編集中 { border-left-color: var(--accent); color: var(--accent); }
-  .st-提出済み { border-left-color: #720039; color: #720039; }
-  .st-納品済み { border-left-color: #8a8287; }
-  .st-請求済み { border-left-color: #5a5357; }
+  .st-提出済み { border-left-color: var(--accent-dark); color: var(--accent-dark); }
+  .st-納品済み { border-left-color: var(--muted); }
+  .st-請求済み { border-left-color: var(--muted-strong); }
   .st-入金済み { border-left-color: var(--ink); color: var(--muted); }
   .st-見送り { border-left-color: var(--line); color: var(--muted); font-weight: 400; }
 
   /* 状態のプルダウン（線の形のまま選べる） */
   .status-select {
     appearance: none;
-    border-top: none;
-    border-right: none;
-    border-bottom: none;
     background-color: transparent;
-    font: inherit;
-    font-size: 0.85rem;
-    font-weight: 700;
+    font: inherit; /* 大きさと太さは .status のまま */
     padding: 2px 24px 2px 10px;
     cursor: pointer;
     /* 右に小さな下向きの矢印 */
@@ -256,7 +256,7 @@
     cursor: pointer;
     transition: background 0.15s ease, color 0.15s ease;
   }
-  .btn-primary { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+  .btn-primary { background: var(--accent); border: 1px solid var(--accent); color: var(--on-accent); }
   .btn-primary:hover:not(:disabled) { background: transparent; color: var(--accent); }
   .btn-primary:disabled { opacity: 0.4; cursor: default; }
   .btn-secondary { background: transparent; border: 1px solid var(--line); color: var(--muted); }
