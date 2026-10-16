@@ -45,6 +45,16 @@ export function applyStatus(p: Project, status: Status, today: string): Project 
 // ---- 月ごとの売上 ----
 // 月は "YYYY-MM" の文字列で扱う
 
+// "2026-09-28" → "2026-09"
+export function monthOf(date: string): string {
+  return date.slice(0, 7);
+}
+
+// プルダウンに出す月の一覧の共通の決まり（今月を必ず入れ、重ならないように。新しい月が上）
+function monthsNewestFirst(today: string, months: Iterable<string>): string[] {
+  return [...new Set([monthOf(today), ...months])].sort().reverse();
+}
+
 // 入金予定: 見送り以外で、まだ入金されていないもの（編集中・提出済みも含む）
 function isPlanned(p: Project): boolean {
   return p.status !== "見送り" && p.paid == null && p.payDue != null;
@@ -63,12 +73,12 @@ export function salesOfMonth(projects: Project[], month: string) {
 
 // プルダウンに出す月の一覧（今月＋入金日・入金予定日がある月。新しい月が上）
 export function salesMonths(projects: Project[], today: string): string[] {
-  const months = new Set<string>([today.slice(0, 7)]);
+  const months: string[] = [];
   for (const p of projects) {
-    if (p.paid) months.add(p.paid.slice(0, 7));
-    if (isPlanned(p)) months.add(p.payDue!.slice(0, 7));
+    if (p.paid) months.push(monthOf(p.paid));
+    if (isPlanned(p)) months.push(monthOf(p.payDue!));
   }
-  return [...months].sort().reverse();
+  return monthsNewestFirst(today, months);
 }
 
 // "2026-09" → "2026年9月"
@@ -129,6 +139,31 @@ export function filterProjects(projects: Project[], filter: Filter, today: strin
     default:
       return projects;
   }
+}
+
+// ---- 着手月で分ける ----
+// 着手日の月で分ける。着手日が空の案件は今月に入れる（どの月にも出ないと見失うので）。"all" ならすべて
+export const ALL_MONTHS = "all";
+
+export function startMonth(p: Project, today: string): string {
+  return monthOf(p.start ?? today);
+}
+
+// 今週提出・未入金は、着手した月に関係なく全件から探す（月で分けると見落とすので）
+export function usesMonth(filter: Filter): boolean {
+  return filter.kind === "all" || filter.kind === "director";
+}
+
+// 絞り込みと着手月を合わせてかける（表に出す案件）
+export function filterProjectsInMonth(projects: Project[], filter: Filter, month: string, today: string): Project[] {
+  const filtered = filterProjects(projects, filter, today);
+  if (!usesMonth(filter) || month === ALL_MONTHS) return filtered;
+  return filtered.filter((p) => startMonth(p, today) === month);
+}
+
+// 着手月のプルダウンに出す月の一覧（今月＋着手日がある月。新しい月が上）
+export function startMonths(projects: Project[], today: string): string[] {
+  return monthsNewestFirst(today, projects.map((p) => startMonth(p, today)));
 }
 
 // プルダウンに出す担当Dの一覧（データに出てくる順）
