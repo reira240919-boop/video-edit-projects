@@ -1,15 +1,38 @@
+/* 色は5つだけ。メインの色（--accent）と、文字・背景・線・薄い文字 */
+:root {
+  --accent: #a30052;
+  --accent-tint: #f6e6ee; /* メインの色をうすくした背景（ボタンに乗せたとき） */
+  --ink: #2a2428;
+  --bg: #f6f4f5;
+  --card: #ffffff;
+  --line: #ebe6e9;
+  --muted: #8a8287;
+  --danger: #b3261e; /* 削除・エラーだけ */
+}
+
 * { box-sizing: border-box; }
+/* 角の丸みは付けない */
+button, input, select { border-radius: 0; }
 body {
   margin: 0;
   padding: 24px 16px 48px;
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
   font-size: 16px;
   line-height: 1.6;
-  color: #3a3129;
-  background: #faf5ea;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
 }
 .wrap { max-width: 1400px; margin: 0 auto; }
-h1 { font-size: 1.6rem; margin: 0 0 20px; }
+h1 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin: 0 0 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+h1::before { content: "■"; color: var(--accent); margin-right: 8px; }
 
 /* 上の数字
    1行目: 売上の月のプルダウン（売上の枠の上）
@@ -17,24 +40,19 @@ h1 { font-size: 1.6rem; margin: 0 0 20px; }
 .summary {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 3fr);
-  column-gap: 12px;
+  column-gap: 16px;
   row-gap: 6px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
-.month-picker { grid-column: 3; grid-row: 1; padding-left: 16px; font-size: 0.85rem; color: #6e604f; } /* 左端を枠の中の「入金済み」にそろえる */
+.month-picker { grid-column: 3; grid-row: 1; padding-left: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); } /* 左端を枠の中の「入金済み」にそろえる */
 .summary-box {
   grid-row: 2;
-  background: #fffcf5;
-  border-radius: 10px;
-  padding: 12px 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  background: var(--card);
+  border-top: 2px solid var(--accent);
+  padding: 14px 20px 16px;
 }
-/* 3つの枠はそれぞれ別の淡い色（あんず・ピーチ・セージ） */
-.summary > .summary-box:nth-of-type(1) { background: #fdefd9; }
-.summary > .summary-box:nth-of-type(2) { background: #fbe6de; }
-.summary > .summary-box:nth-of-type(3) { background: #edf1dc; }
-.summary-label { font-size: 0.85rem; color: #6e604f; }
-.summary-value { font-size: 1.3rem; font-weight: bold; }
+.summary-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; color: var(--muted); }
+.summary-value { margin-top: 4px; font-size: 1.4rem; font-weight: 800; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
 
 /* 狭い画面では縦に並べる（プルダウンは売上の枠のすぐ上） */
 @media (max-width: 720px) {
@@ -47,13 +65,16 @@ h1 { font-size: 1.6rem; margin: 0 0 20px; }
   .sales-values .summary-value { font-size: 1.1rem; white-space: nowrap; }
 }
 
+/* 月のプルダウンは下線だけ */
 .month-select {
   margin-left: 8px;
-  font-size: 0.85rem;
-  padding: 2px 6px;
-  border: 1px solid #dccfb8;
-  border-radius: 6px;
-  background: #fffcf5;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink);
+  padding: 2px 4px;
+  border: none;
+  border-bottom: 1px solid var(--ink);
+  background: transparent;
   min-width: 8.5em; /* 9月と10月で幅が変わらないように */
 }
 /* 3つの数字は同じ幅の列に置く（金額の桁が変わっても位置がずれない） */
@@ -64,50 +85,69 @@ h1 { font-size: 1.6rem; margin: 0 0 20px; }
   font-variant-numeric: tabular-nums;
 }
 
-/* タブ */
-.tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+/* タブ。枠線でつながった切替ボタン。選んでいるものはメインの色で塗る */
+.tabs { display: flex; flex-wrap: wrap; border: 1px solid var(--accent); background: var(--card); }
 /* 絞り込み（左）と「＋ 案件を追加」（右）の行 */
-.toolbar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.toolbar { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.toolbar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .tab, .tab-select {
-  font-size: 0.9rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   line-height: 1.4;
-  padding: 4px 14px;
-  border: 1px solid #dccfb8;
-  border-radius: 999px;
-  background: #fffcf5;
-  color: #4a3e33;
+  padding: 8px 18px;
+  border: none;
+  background: transparent;
+  color: var(--accent);
   cursor: pointer;
 }
-/* 押したあとにブラウザが付ける濃い太枠は出さない。キーボード操作のときだけ薄い枠を出す */
-.tab:focus, .tab-select:focus { outline: none; }
-.tab:focus-visible { box-shadow: 0 0 0 2px rgba(201, 139, 139, 0.6); }
-.tab.active, .tab-select.active {
-  background: #f1d6d6;
-  border-color: #f1d6d6;
-  color: #7a3e3e; /* 薄い背景なので文字は濃い色 */
-  font-weight: bold;
+.tab + .tab, .tab + .tab-select, .tab-select + .tab-select { border-left: 1px solid var(--accent); }
+/* プルダウンは右に小さな「∨」 */
+.tab-select {
+  appearance: none;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%23a30052' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 11px 11px;
 }
+.tab:hover, .tab-select:hover { background-color: var(--accent-tint); }
+/* 押したあとにブラウザが付ける濃い太枠は出さない。キーボード操作のときだけ枠を出す */
+.tab:focus, .tab-select:focus { outline: none; }
+.tab:focus-visible, .tab-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tab.active, .tab-select.active { background-color: var(--accent); color: #fff; }
+.tab-select.active {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%23ffffff' stroke-width='1.6'/%3E%3C/svg%3E");
+}
+.tab-select option { color: var(--ink); background: var(--card); }
+/* 今週提出・未入金を選んでいる間の着手月（押せない） */
+.tab-select:disabled { opacity: 0.4; cursor: not-allowed; background-color: transparent; }
 
 /* 横1行の表。狭い画面では横にスクロールする */
 .table-wrap {
-  background: #fffcf5;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  background: var(--card);
+  border-top: 2px solid var(--accent);
   overflow-x: auto;
 }
 table { width: max-content; min-width: 100%; border-collapse: collapse; }
 th, td {
-  padding: 10px 12px;
+  padding: 12px 12px;
   text-align: left;
-  border-bottom: 1px solid #efe6d4;
-  font-size: 0.95rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9rem;
   vertical-align: middle;
   white-space: nowrap;
 }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: #fcf7fa; }
 th {
-  background: #f5ecda;
-  font-weight: bold;
+  background: var(--card);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--ink);
   position: sticky;
   top: 0;
 }
@@ -116,20 +156,20 @@ table { --actions-w: 44px; }
 th:nth-child(-n+2), td:nth-child(-n+2) {
   position: sticky;
   left: 0;
-  background: #fffcf5;
+  background: var(--card);
   z-index: 1;
 }
 th:nth-child(2), td:nth-child(2) { left: var(--actions-w); }
-th:nth-child(-n+2) { top: 0; background: #f5ecda; z-index: 2; }
+th:nth-child(-n+2) { top: 0; background: var(--card); z-index: 2; }
 
 /* 案件名は決めた幅を超えたら折り返す（スマホではさらに狭く） */
-td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; min-width: 8em; max-width: 14em; line-height: 1.4; }
+td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; min-width: 8em; max-width: 14em; line-height: 1.4; font-weight: 700; }
 @media (max-width: 720px) {
   td:nth-child(2) { min-width: 6em; max-width: 8em; }
 }
 
 /* 案件名の上に小さく出す会社名と、単価の上に小さく出す「600円×16分」 */
-.company, .cell-note { display: block; font-size: 0.8rem; color: #7a6c5c; line-height: 1.3; }
+.company, .cell-note { display: block; font-size: 0.72rem; font-weight: 400; letter-spacing: 0.04em; color: var(--muted); line-height: 1.4; }
 
 /* 自分用の表（列が1つ多い）: 担当D・種類・区分・状態（左から3〜6列目）は左右の余白と状態の丸を細くし、
    空いた分だけ案件名を長く1行に収める（長い案件名で会社名と合わせて3行にならないように） */
@@ -147,38 +187,40 @@ td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; min-width: 8em; 
   height: 28px;
   padding: 0;
   border: none;
-  border-radius: 6px;
   background: transparent;
-  color: #8c7a68;
+  color: var(--muted);
   cursor: pointer;
 }
-.icon-btn:hover { background: #f5ecdb; color: #8a6548; }
-.icon-btn.is-open { background: #f5ecdb; color: #8a6548; }
+.icon-btn:hover, .icon-btn.is-open { background: var(--accent-tint); color: var(--accent); }
 .icon-btn:focus { outline: none; }
-.icon-btn:focus-visible { box-shadow: 0 0 0 2px rgba(201, 139, 139, 0.8); }
-td.num, th.num { text-align: right; }
-.overdue { color: #c62828; font-weight: bold; background: #fdecea; padding: 2px 6px; border-radius: 4px; }
-.empty { padding: 32px; text-align: center; color: #7a6c5c; background: #fffcf5; border-radius: 10px; }
-.loading { color: #7a6c5c; padding: 16px 0; }
+.icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+/* 期限を過ぎた日付 */
+.overdue { color: var(--danger); font-weight: 800; border-bottom: 2px solid var(--danger); }
+.empty { padding: 32px; text-align: center; color: var(--muted); background: var(--card); border-top: 2px solid var(--accent); font-size: 0.85rem; letter-spacing: 0.04em; }
+.loading { color: var(--muted); padding: 16px 0; }
 
-/* 状態の色 */
-.status { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.9rem; white-space: nowrap; }
-/* くすんだ色。どれも文字と背景の差を十分に取っている */
-.st-相談中 { background: #eceef0; color: #56616a; }
-.st-受注 { background: #e2e9f0; color: #3f5f80; }
-.st-編集中 { background: #f3e9df; color: #80583a; }
-.st-提出済み { background: #efecd8; color: #6b5f36; }
-.st-納品済み { background: #e3ece4; color: #46654d; }
-.st-請求済み { background: #e9e5ef; color: #5d5178; }
-.st-入金済み { background: #dae8e2; color: #3f6a60; }
-.st-見送り { background: #ebebeb; color: #7a6c5c; }
+/* 状態。塗りはやめて、左の太い線の濃さで分ける（作業中はメインの色、お金の段階はグレー） */
+.status { display: inline-block; padding: 2px 0 2px 10px; border-left: 4px solid; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; color: var(--ink); }
+.st-相談中 { border-left-color: #edccdc; }
+.st-受注 { border-left-color: #dfa6c2; }
+.st-編集中 { border-left-color: var(--accent); color: var(--accent); }
+.st-提出済み { border-left-color: #720039; color: #720039; }
+.st-納品済み { border-left-color: #8a8287; }
+.st-請求済み { border-left-color: #5a5357; }
+.st-入金済み { border-left-color: var(--ink); color: var(--muted); }
+.st-見送り { border-left-color: var(--line); color: var(--muted); font-weight: 400; }
 
-/* 状態のプルダウン（色付きの丸い形のまま選べる） */
+/* 状態のプルダウン（線の形のまま選べる） */
 .status-select {
   appearance: none;
-  border: none;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  background-color: transparent;
   font: inherit;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 700;
   padding: 2px 24px 2px 10px;
   cursor: pointer;
   /* 右に小さな下向きの矢印 */
@@ -189,78 +231,88 @@ td.num, th.num { text-align: right; }
   background-repeat: no-repeat;
 }
 .status-select:focus { outline: none; }
-.status-select:focus-visible { box-shadow: 0 0 0 2px rgba(201, 139, 139, 0.8); }
+.status-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-/* 「保存しました」などのお知らせ（画面の下に数秒出す） */
+/* 「保存しました」などのお知らせ（画面の下に数秒出す）。白＋左にメインの色の線 */
 .toast {
   position: fixed;
   left: 50%;
   bottom: 24px;
   transform: translateX(-50%);
-  background: #c98b8b;
-  color: #fff;
-  padding: 8px 20px;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  background: var(--card);
+  color: var(--ink);
+  padding: 12px 20px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   z-index: 10;
 }
 .toast[hidden] { display: none; }
-.toast-error { background: #a04040; }
+.toast-error { color: var(--danger); border-left-color: var(--danger); }
 
-/* 見送りの表（本体の表の下） */
-.sub-section { margin-top: 32px; }
-.sub-section h2 { font-size: 1.1rem; color: #6e604f; margin: 0 0 12px; }
+/* 見送りの表（本体の表の下）。線はグレーにして控えめに */
+.sub-section { margin-top: 36px; }
+.sub-section h2 { font-size: 0.82rem; font-weight: 800; letter-spacing: 0.12em; color: var(--muted); margin: 0 0 10px; }
+.sub-section .table-wrap { border-top-color: var(--muted); }
 
-/* ボタン */
+/* ボタン。角ばった形。メインは塗り、サブは線だけ */
 .btn-primary, .btn-secondary {
   font: inherit;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   line-height: 1.4;
-  padding: 4px 16px;
-  border-radius: 999px;
+  padding: 9px 20px;
   cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
 }
-.btn-primary { background: #c98b8b; border: 1px solid #c98b8b; color: #fff; }
+.btn-primary { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: transparent; color: var(--accent); }
 .btn-primary:disabled { opacity: 0.4; cursor: default; }
-.btn-secondary { background: #fffcf5; border: 1px solid #dccfb8; color: #4a3e33; }
+.btn-secondary { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+.btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
 
 /* 追加・修正の入力欄 */
 .project-form {
-  background: #fffcf5;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  padding: 16px;
+  background: var(--card);
+  border-top: 2px solid var(--accent);
+  padding: 20px;
   margin-bottom: 20px;
 }
-.project-form h2 { font-size: 1.05rem; margin: 0 0 12px; }
+.project-form h2 { font-size: 0.85rem; font-weight: 800; letter-spacing: 0.12em; margin: 0 0 14px; }
 /* 広い画面では横に並べ、狭い画面では1列になる */
-.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px 16px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px 18px; }
 /* 自分用の入力欄は、全部同じ幅で5つずつ×3行（会社名〜種類 / 区分〜初稿提出日 / 単価〜納品日） */
 @media (min-width: 900px) {
   .mine-form .form-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
-.field { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #6e604f; }
-.field em { font-style: normal; font-size: 0.75rem; color: #a04040; margin-left: 6px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; color: var(--muted); }
+.field em { font-style: normal; font-size: 0.7rem; color: var(--danger); margin-left: 6px; }
+/* 入力欄は下線だけ。入力中は下線がメインの色になる */
 .field input, .field select {
   font: inherit;
   font-size: 0.95rem;
-  color: #3a3129;
-  padding: 5px 8px;
-  border: 1px solid #dccfb8;
-  border-radius: 6px;
-  background: #fffcf5;
+  font-weight: 400;
+  letter-spacing: normal;
+  color: var(--ink);
+  padding: 6px 2px;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
   width: 100%;
 }
-.field input.invalid { border-color: #a04040; }
+.field input:focus, .field select:focus { outline: none; border-bottom-color: var(--accent); }
+.field input.invalid { border-bottom-color: var(--danger); }
 /* 入力欄のプルダウン（種類・区分・状態）と、候補が出る欄（会社名・担当D）は、同じ細い「∨」をいつも出す。
    右端から少し内側に置く */
 .field select, .field input[list] {
   appearance: none;
   padding-right: 30px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%236e604f' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%238a8287' stroke-width='1.4'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 11px center;
+  background-position: right 8px center;
   background-size: 12px 12px;
 }
 /* 候補の欄はブラウザの「▼」を見えなくして、上の「∨」の場所に重ねる（押すと候補が開く） */
@@ -271,8 +323,8 @@ td.num, th.num { text-align: right; }
   cursor: pointer;
 }
 
-.field-error { color: #a04040; font-size: 0.8rem; }
-.form-actions { display: flex; gap: 8px; margin-top: 16px; }
+.field-error { color: var(--danger); font-size: 0.8rem; }
+.form-actions { display: flex; gap: 10px; margin-top: 20px; }
 
 /* 画面には出さず、読み上げだけに使う文字 */
 .visually-hidden {
@@ -288,32 +340,31 @@ td.num, th.num { text-align: right; }
 .row-menu {
   position: fixed;
   z-index: 20;
-  min-width: 120px;
-  padding: 4px;
-  background: #fffcf5;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+  min-width: 140px;
+  padding: 4px 0;
+  background: var(--card);
+  border: 1px solid var(--ink);
 }
 .row-menu button {
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 7px 10px;
+  padding: 8px 14px;
   border: none;
-  border-radius: 6px;
   background: transparent;
   font: inherit;
-  font-size: 0.9rem;
-  color: #4a3e33;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
   text-align: left;
   cursor: pointer;
 }
-.row-menu button:hover, .row-menu button:focus-visible { background: #f5ecdb; outline: none; }
-.row-menu button.danger { color: #a04040; }
-/* 「請求書を発行」はくすみピンクで目立たせる */
-.row-menu button.invoice { color: #7a3e3e; font-weight: bold; }
-.row-menu button.invoice:hover, .row-menu button.invoice:focus-visible { background: #f1d6d6; }
+.row-menu button:hover, .row-menu button:focus-visible { background: var(--accent-tint); outline: none; }
+.row-menu button.danger { color: var(--danger); }
+.row-menu button.danger:hover, .row-menu button.danger:focus-visible { background: #fbeceb; }
+/* 「請求書を発行」はメインの色で目立たせる */
+.row-menu button.invoice { color: var(--accent); font-weight: 800; }
 
 /* 入力欄の「＋ 分単価で計算」「分単価を使わない」 */
 .link-btn {
@@ -322,24 +373,24 @@ td.num, th.num { text-align: right; }
   border: none;
   background: none;
   font: inherit;
-  font-size: 0.8rem;
-  color: #a0605f;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
   cursor: pointer;
   text-decoration: underline;
 }
-.field input[readonly] { background: #f5ecdb; color: #6e604f; }
-.field-hint { font-size: 0.75rem; color: #7a6c5c; }
-.row-menu button.danger:hover, .row-menu button.danger:focus-visible { background: #f6e9e9; }
+.field input[readonly] { color: var(--muted); border-bottom-style: dashed; }
+.field-hint { font-size: 0.7rem; font-weight: 400; color: var(--muted); }
 
 /* 自分用の印（見出しの横） */
 .mine-badge {
   display: inline-block;
-  margin-left: 10px;
+  margin-left: 12px;
   padding: 2px 10px;
-  border-radius: 999px;
-  background: #c98b8b;
-  color: #fff;
-  font-size: 0.8rem;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
   vertical-align: middle;
 }
-.load-error { color: #a04040; }
+.load-error { color: var(--danger); }
