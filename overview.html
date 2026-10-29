@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>動画編集 案件一覧 説明図</title>
+<style>
+  /* しくみと安全の説明図。1600×1120 の1枚を、横向き A4 の PDF にする */
+  :root {
+    --bg: #f3f5f8;
+    --card: #ffffff;
+    --fg: #1d2633;
+    --muted: #5d6878;
+    --rule: #d6dce4;
+    --home: #e8873a;
+    --home-soft: #fdf3ea;
+    --google: #3d4757;
+    --google-soft: #f6f7f9;
+    --client: #2f64a8;
+    --client-soft: #edf3fb;
+    --web: #7a8494;
+    --web-soft: #f1f2f5;
+    --rec: #3f8a3c;
+    --inv: #2f64a8;
+    --gate: #b42318;
+    --font: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+  }
+  @page { size: A4 landscape; margin: 0; }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { margin: 0; background: var(--bg); }
+  body { font-family: var(--font); color: var(--fg); }
+  .canvas { position: relative; width: 1600px; height: 1120px; margin: 0 auto; background: var(--bg); }
+  .abs { position: absolute; }
+  @media print {
+    .canvas { zoom: .70; }
+  }
+
+  header { left: 40px; top: 28px; right: 40px; }
+  header h1 { margin: 0; font-size: 34px; font-weight: 800; letter-spacing: .02em; }
+  header p { margin: 6px 0 0; font-size: 16px; color: var(--muted); }
+
+  .zone { border: 3px solid; padding: 12px 18px; }
+  .zone .label { font-size: 17px; font-weight: 800; }
+  .zone .label small { font-weight: 500; font-size: 14px; color: var(--muted); margin-left: 8px; }
+  .home { border-color: var(--home); background: var(--home-soft); border-width: 4px; }
+  .home .label { color: #b85e17; }
+  .google { border-color: var(--google); background: var(--google-soft); }
+  .google .label { color: var(--google); }
+  .client { border-color: var(--client); background: var(--client-soft); }
+  .client .label { color: var(--client); }
+
+  .box { background: var(--card); border: 2px solid var(--rule); padding: 14px 16px; display: grid; align-content: start; gap: 4px; }
+  .box h2 { margin: 0; font-size: 21px; font-weight: 800; }
+  .box p { margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+  .box p b { color: var(--fg); font-weight: 700; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .chip { font-size: 13px; padding: 3px 9px; background: var(--home-soft); border: 1px solid #f1c9a5; color: #8a4a12; }
+  .gate { font-size: 13px; font-weight: 700; color: #fff; background: var(--gate); padding: 4px 10px; justify-self: start; margin-top: 6px; }
+
+  .step { font-size: 13.5px; font-weight: 700; line-height: 1.45; white-space: nowrap; background: #fff; border: 1px solid currentColor; padding: 1px 6px; }
+  .step.r { color: var(--rec); }
+  .step.i { color: var(--inv); }
+  .step.w { color: var(--muted); }
+
+  .legend { right: 40px; top: 40px; display: flex; gap: 18px; font-size: 14px; color: var(--muted); align-items: center; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { display: inline-block; width: 28px; height: 4px; }
+
+  .safety { left: 40px; right: 40px; top: 800px; height: 290px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .safety h3 { margin: 0 0 4px; font-size: 15px; letter-spacing: .08em; color: var(--muted); grid-column: 1 / -1; }
+  .card { background: var(--card); border-top: 5px solid; padding: 16px 18px; display: grid; align-content: start; gap: 8px; }
+  .card h4 { margin: 0; font-size: 19px; font-weight: 800; }
+  .card ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; font-size: 13.5px; line-height: 1.6; color: #2c3644; }
+  .card ul small { color: var(--muted); font-size: 13px; }
+  .card.gatec { border-color: var(--gate); }
+  .card.homec { border-color: var(--home); }
+  .card.webc { border-color: var(--web); }
+</style>
+</head>
+<body>
+<div class="canvas">
+
+  <header class="abs">
+    <h1>動画編集 案件一覧 のしくみと安全の境界</h1>
+    <p>動画編集 案件一覧・請求書発行　しくみと安全の説明 ／ 本物の案件は自分のパソコンの中だけ。請求書を出すときだけ Google に1件分を送ります</p>
+  </header>
+  <div class="abs legend">
+    <span><i style="background:var(--rec)"></i>案件を記録する（①②）</span>
+    <span><i style="background:var(--inv)"></i>請求書を出す（Ⓐ〜Ⓔ）</span>
+  </div>
+
+  <!-- 区域 -->
+  <div class="abs zone home" style="left:40px; top:140px; width:760px; height:620px;">
+    <div class="label">自分のパソコン<small>本物の記録は、すべてここ</small></div>
+  </div>
+  <div class="abs zone google" style="left:830px; top:140px; width:380px; height:620px;">
+    <div class="label">Google<small>請求書を作って保管する</small></div>
+  </div>
+  <div class="abs zone client" style="left:1240px; top:140px; width:320px; height:620px;">
+    <div class="label">取引先<small>請求書を受け取る</small></div>
+  </div>
+
+  <!-- 箱 -->
+  <div class="abs box" style="left:60px; top:200px; width:200px; height:190px;">
+    <h2>自分</h2>
+    <p>パソコンのブラウザで案件一覧を開く。ログインしたら自動で起動しているので、開くだけで使える</p>
+  </div>
+
+  <div class="abs box" style="left:320px; top:196px; width:460px; height:190px;">
+    <h2>自分用の案件一覧</h2>
+    <p><b>Next.js</b>（画面を作るしくみ）を、このパソコンの中だけで動かす。案件の入力・状態の変更・請求書の発行を受け付ける</p>
+    <div class="gate">このパソコンからの接続かを確認</div>
+  </div>
+
+  <div class="abs box" style="left:320px; top:540px; width:240px; height:196px;">
+    <h2>保管庫</h2>
+    <p><b>projects.json</b>（パソコンの中のファイル）。インターネットには置かない</p>
+    <div class="chips">
+      <span class="chip">案件名</span>
+      <span class="chip">会社名</span>
+      <span class="chip">単価</span>
+      <span class="chip">提出日・入金日</span>
+      <span class="chip">状態</span>
+    </div>
+  </div>
+
+  <div class="abs box" style="left:580px; top:540px; width:200px; height:196px;">
+    <h2>鍵の置き場</h2>
+    <p>Google につなぐ鍵と、スプレッドシートの番号。パソコンの中だけに置く</p>
+    <div class="chips">
+      <span class="chip">Google の鍵</span>
+      <span class="chip">シートの番号</span>
+    </div>
+  </div>
+
+  <div class="abs box" style="left:850px; top:196px; width:340px; height:210px;">
+    <h2>請求書のスプレッドシート</h2>
+    <p><b>Google スプレッドシート</b>。発行した案件が1行ずつ入る。シートのメニュー「請求書」から PDF を作る</p>
+    <div class="gate">鍵と、共有されたシートかを確認</div>
+  </div>
+  <div class="abs box" style="left:850px; top:540px; width:340px; height:196px;">
+    <h2>請求書の PDF</h2>
+    <p><b>Google Drive</b>（ネット上のファイル置き場）の「請求書PDF / 年月」に保存する</p>
+    <p>PDF のリンクは、シートの行に自動で入る</p>
+  </div>
+
+  <div class="abs box" style="left:1260px; top:196px; width:280px; height:184px;">
+    <h2>取引先</h2>
+    <p>請求書の PDF を受け取る</p>
+    <p>送ったら、送付方法と送付日をシートに書く。入金されたら案件一覧で入金済みにする</p>
+  </div>
+
+  <!-- 矢印 -->
+  <svg class="abs" style="left:0; top:0;" width="1600" height="1120" viewBox="0 0 1600 1120" aria-hidden="true">
+    <defs>
+      <marker id="hr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3f8a3c"/></marker>
+      <marker id="hi" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f64a8"/></marker>
+    </defs>
+    <g fill="none" stroke-width="4">
+      <!-- ① 自分 → 案件一覧 -->
+      <path d="M260,250 H316" stroke="#3f8a3c" marker-end="url(#hr)"/>
+      <!-- ② 案件一覧 ⇄ 保管庫 -->
+      <path d="M440,390 V536" stroke="#3f8a3c" marker-start="url(#hr)" marker-end="url(#hr)"/>
+      <!-- Ⓐ 自分 → 案件一覧（請求書を発行） -->
+      <path d="M260,340 H316" stroke="#2f64a8" stroke-dasharray="10 6" marker-end="url(#hi)"/>
+      <!-- Ⓑ 案件一覧 → 鍵の置き場 -->
+      <path d="M680,390 V536" stroke="#2f64a8" stroke-dasharray="10 6" marker-start="url(#hi)"/>
+      <!-- Ⓒ 案件一覧 → スプレッドシート -->
+      <path d="M780,300 H846" stroke="#2f64a8" stroke-dasharray="10 6" marker-end="url(#hi)"/>
+      <!-- Ⓓ スプレッドシート → PDF -->
+      <path d="M1020,406 V536" stroke="#2f64a8" stroke-dasharray="10 6" marker-end="url(#hi)"/>
+      <!-- Ⓔ PDF → 取引先 -->
+      <path d="M1190,640 H1225 V300 H1256" stroke="#2f64a8" stroke-dasharray="10 6" marker-end="url(#hi)"/>
+    </g>
+  </svg>
+
+  <!-- 矢印の説明 -->
+  <div class="abs step r" style="left:262px; top:222px;">①</div>
+  <div class="abs step r" style="left:72px; top:404px;">① 案件を入力・状態を変える</div>
+  <div class="abs step r" style="left:452px; top:448px;">② 保存する／読み込む</div>
+  <div class="abs step i" style="left:262px; top:350px;">Ⓐ</div>
+  <div class="abs step i" style="left:72px; top:436px;">Ⓐ 納品済みの案件で「請求書を発行」</div>
+  <div class="abs step i" style="left:692px; top:448px;">Ⓑ 鍵を使う</div>
+  <div class="abs step i" style="left:786px; top:226px;">Ⓒ 1行<br>書き込む</div>
+  <div class="abs step i" style="left:1032px; top:458px;">Ⓓ PDF を作って保存</div>
+  <div class="abs step i" style="left:1196px; top:404px;">Ⓔ PDF を送る</div>
+
+  <!-- 安全の境界 -->
+  <section class="abs safety">
+    <h3>安全の境界</h3>
+    <div class="card gatec">
+      <h4>入口の確認</h4>
+      <ul>
+        <li>自分用の案件一覧は、このパソコンからしか開けない<br><small>同じ Wi-Fi のほかの機械やインターネットからは入れない</small></li>
+        <li>鍵は、パソコンの中の案件一覧だけが使う。画面には出ない</li>
+        <li>Google には鍵（外のサービスを使うための合言葉）で入る。書き込めるのは、その鍵に共有したスプレッドシートだけ</li>
+      </ul>
+    </div>
+    <div class="card homec">
+      <h4>本物の記録はパソコンの中</h4>
+      <ul>
+        <li>案件の記録は、パソコンの中のファイル（projects.json）だけに置く。インターネットには置かない</li>
+        <li>Google の鍵とスプレッドシートの番号も、パソコンの中だけ。GitHub には上げない</li>
+      </ul>
+    </div>
+    <div class="card webc">
+      <h4>外に送るもの</h4>
+      <ul>
+        <li>Google に送るのは、請求書を発行した案件1件分だけ（取引先名・案件名・金額・納品日・支払期限など）</li>
+        <li>取引先に渡るのは、請求書の PDF だけ</li>
+        <li>ほかの案件や、まだ請求していない案件は送らない</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
