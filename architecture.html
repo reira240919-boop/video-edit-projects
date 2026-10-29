@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>動画編集 案件一覧 全体図</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+  /* レイアウト: 白い板の上に2段の流れ図（上=案件の記録、下=請求書）。下に補足 */
+  :root {
+    --bg: #eef1f4;
+    --card: #ffffff;
+    --fg: #1d2633;
+    --muted: #5d6878;
+    --rec: #2f64a8;
+    --rec-soft: #6a9bd8;
+    --inv: #3f8a3c;
+    --inv-soft: #7fb87b;
+    --store: #e8873a;
+    --store-soft: #f3ac6e;
+    --chat: #7a8494;
+    --app: #a30052;
+    --sheet: #1f6e3d;
+    --display: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+    --body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+  }
+  @page { size: A4 landscape; margin: 0; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    padding: 28px 16px 32px;
+  }
+  main { max-width: 1180px; margin: 0 auto; display: grid; gap: 16px; }
+  .board { background: var(--card); border-radius: 16px; padding: 24px 20px 12px; }
+  .scroll { overflow-x: auto; }
+  svg { display: block; width: 100%; min-width: 760px; height: auto; }
+  .caption { text-align: center; color: var(--muted); font-size: 15px; letter-spacing: .04em; margin: 0; }
+  .notes { justify-content: center; margin: 0 auto; color: var(--muted); font-size: 14px; line-height: 1.8; display: grid; gap: 4px; }
+  .notes p { margin: 0; white-space: nowrap; }
+  .notes strong { color: var(--fg); font-weight: 700; }
+  @media print {
+    body { zoom: .86; padding: 14px 16px 0; min-height: 0; }
+  }
+
+  /* 図の中の文字と色 */
+  .h { font-family: var(--display); font-weight: 900; font-size: 26px; fill: var(--fg); }
+  .name { font-family: var(--display); font-weight: 700; font-size: 18px; fill: var(--fg); text-anchor: middle; }
+  .tech { font-family: var(--body); font-size: 13px; fill: var(--muted); text-anchor: middle; }
+  .tag { font-family: var(--body); font-size: 13px; font-weight: 500; text-anchor: middle; }
+  .paper { fill: var(--card); }
+  .rec { color: var(--rec); }
+  .inv { color: var(--inv); }
+  .arrow-r { stroke: var(--rec-soft); stroke-width: 4; fill: none; }
+  .arrow-i { stroke: var(--inv-soft); stroke-width: 4; fill: none; }
+  .head-r { fill: var(--rec-soft); }
+  .head-i { fill: var(--inv-soft); }
+  .link { stroke: var(--inv); stroke-width: 4; fill: none; }
+  .db-body { fill: var(--store); }
+  .db-top { fill: var(--store-soft); }
+  .db-band { stroke: var(--card); stroke-width: 3; fill: none; }
+  .on-color { fill: var(--card); }
+  .pill-chat { fill: var(--chat); }
+  .pill-app { fill: var(--app); }
+  .pill-sheet { fill: var(--sheet); }
+  .pill-t { font-family: var(--body); font-size: 13px; font-weight: 700; fill: #fff; text-anchor: middle; }
+  .legend { font-family: var(--body); font-size: 14px; font-weight: 500; fill: var(--fg); }
+  .ln { stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+  .ol { stroke: currentColor; stroke-width: 3; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+<main>
+  <section class="board" aria-label="動画編集 案件一覧と請求書発行の全体図">
+    <div class="scroll">
+      <svg viewBox="0 0 1200 650" role="img" aria-labelledby="fig-title">
+        <title id="fig-title">案件の記録（依頼 → 案件一覧に入力 → パソコンに保存 → 編集して提出 → 納品する）と、請求書（請求書を発行 → スプレッドシートに自動で書き込む → PDF を作成 → Drive に保存 → 取引先に送る → 入金を記録）の流れ</title>
+        <defs>
+          <marker id="mr" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path class="head-r" d="M0 0 L10 5 L0 10 z"/></marker>
+          <marker id="mi" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path class="head-i" d="M0 0 L10 5 L0 10 z"/></marker>
+          <marker id="ml" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path fill="var(--inv)" d="M0 0 L10 5 L0 10 z"/></marker>
+
+          <!-- 依頼が届く（チャット） -->
+          <g id="i-chat">
+            <path d="M-46 -40 H12 a6 6 0 0 1 6 6 V2 a6 6 0 0 1 -6 6 H-24 L-36 20 V8 H-46 a6 6 0 0 1 -6 -6 V-34 a6 6 0 0 1 6 -6 Z" fill="currentColor"/>
+            <path d="M-40 -26 H6 M-40 -14 H6 M-40 -2 H-10" stroke="var(--card)" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M-4 -2 H44 a6 6 0 0 1 6 6 V30 a6 6 0 0 1 -6 6 H36 V48 L24 36 H-4 a6 6 0 0 1 -6 -6 V4 a6 6 0 0 1 6 -6 Z" fill="currentColor" opacity=".7"/>
+          </g>
+
+          <!-- 案件一覧に入力（画面の表） -->
+          <g id="i-list">
+            <rect x="-48" y="-40" width="96" height="66" rx="5" class="paper ol"/>
+            <path class="ln" d="M-12 26 L-16 42 H16 L12 26 M-26 44 H26"/>
+            <rect x="-38" y="-31" width="5" height="11" fill="currentColor"/>
+            <rect x="-38" y="-14" width="5" height="11" fill="currentColor"/>
+            <rect x="-38" y="3" width="5" height="11" fill="currentColor" opacity=".45"/>
+            <path class="ln" d="M-26 -25.5 H36 M-26 -8.5 H24 M-26 8.5 H30"/>
+            <circle cx="36" cy="14" r="11" fill="currentColor"/>
+            <path d="M36 8 V20 M30 14 H42" stroke="var(--card)" stroke-width="3" stroke-linecap="round"/>
+          </g>
+
+          <!-- データベース（パソコン内のファイル） -->
+          <g id="i-db">
+            <path class="db-body" d="M-36 -30 V30 A36 12 0 0 0 36 30 V-30 Z"/>
+            <path class="db-band" d="M-36 -8 A36 12 0 0 0 36 -8 M-36 12 A36 12 0 0 0 36 12"/>
+            <ellipse class="db-top" cx="0" cy="-30" rx="36" ry="12"/>
+          </g>
+
+          <!-- 編集して提出（動画） -->
+          <g id="i-film">
+            <rect x="-48" y="-40" width="96" height="62" rx="6" fill="currentColor"/>
+            <path d="M-10 -24 L16 -9 L-10 6 Z" fill="var(--card)"/>
+            <rect x="-48" y="32" width="96" height="12" rx="3" class="paper ol"/>
+            <rect x="-48" y="32" width="60" height="12" rx="3" fill="currentColor"/>
+          </g>
+
+          <!-- 納品済み（箱＋チェック） -->
+          <g id="i-box">
+            <path d="M-40 -22 L0 -40 L40 -22 V28 L0 46 L-40 28 Z" fill="currentColor"/>
+            <path d="M-40 -22 L0 -4 L40 -22 M0 -4 V46" fill="none" stroke="var(--card)" stroke-width="3" stroke-linejoin="round"/>
+            <circle cx="34" cy="30" r="17" class="paper ol"/>
+            <path d="M26 30 L32 36 L43 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+
+          <!-- 請求書を発行（「⋯」メニュー） -->
+          <g id="i-menu">
+            <rect x="-44" y="-44" width="88" height="88" rx="6" class="paper ol"/>
+            <rect x="-36" y="-36" width="72" height="24" rx="3" fill="currentColor"/>
+            <text x="0" y="-19.5" class="on-color" font-size="11" font-weight="700" text-anchor="middle" font-family="var(--body)">請求書を発行</text>
+            <path class="ln" d="M-30 4 H16 M-30 24 H6"/>
+          </g>
+
+          <!-- スプレッドシートに書き込む -->
+          <g id="i-sheet">
+            <rect x="-46" y="-42" width="92" height="84" rx="4" class="paper ol"/>
+            <rect x="-46" y="-42" width="92" height="21" rx="4" fill="currentColor"/>
+            <rect x="-44.5" y="0" width="89" height="21" fill="currentColor" opacity=".35"/>
+            <path d="M-46 0 H46 M-46 21 H46 M-16 -21 V42 M14 -21 V42" stroke="currentColor" stroke-width="2"/>
+            <path d="M-16 -42 V-21 M14 -42 V-21" stroke="var(--card)" stroke-width="2"/>
+          </g>
+
+          <!-- PDF -->
+          <g id="i-pdf">
+            <rect x="-38" y="-46" width="52" height="66" rx="4" class="paper ol"/>
+            <path d="M-14 -26 H22 L36 -12 V46 H-14 Z" class="paper ol"/>
+            <path class="ln" d="M22 -26 V-12 H36"/>
+            <path class="ln" d="M-4 -6 H26 M-4 4 H26 M-4 14 H18"/>
+            <rect x="-26" y="24" width="38" height="18" rx="3" fill="currentColor"/>
+            <text x="-7" y="37.5" class="on-color" font-size="12" font-weight="700" text-anchor="middle" font-family="var(--body)">PDF</text>
+          </g>
+
+          <!-- Drive に保存（フォルダ） -->
+          <g id="i-folder">
+            <path d="M-48 -34 H-16 L-6 -22 H48 V38 H-48 Z" fill="currentColor"/>
+            <path d="M-48 -14 H48" stroke="var(--card)" stroke-width="3"/>
+            <rect x="-22" y="0" width="44" height="22" rx="3" class="paper"/>
+            <text x="0" y="16" font-size="13" font-weight="700" text-anchor="middle" font-family="var(--body)" fill="currentColor">PDF</text>
+          </g>
+
+          <!-- 取引先に送る -->
+          <g id="i-mail">
+            <rect x="-50" y="-32" width="88" height="62" rx="6" fill="currentColor"/>
+            <path d="M-44 -24 L-6 6 L32 -24" fill="none" stroke="var(--card)" stroke-width="4" stroke-linejoin="round"/>
+            <circle cx="40" cy="28" r="17" class="paper ol"/>
+            <path class="ln" d="M32 28 H47 M41 22 L47 28 L41 34"/>
+          </g>
+
+          <!-- 入金を記録（硬貨＋チェック） -->
+          <g id="i-coin">
+            <circle cx="-6" cy="-4" r="38" fill="currentColor"/>
+            <circle cx="-6" cy="-4" r="29" fill="none" stroke="var(--card)" stroke-width="3"/>
+            <text x="-6" y="8" class="on-color" font-size="32" font-weight="700" text-anchor="middle" font-family="var(--body)">¥</text>
+            <circle cx="30" cy="30" r="17" class="paper ol"/>
+            <path d="M22 30 L28 36 L39 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+
+          <!-- どこで行うかを示す札 -->
+          <g id="p-chat"><rect x="-40" y="-12" width="80" height="24" rx="12" class="pill-chat"/><text y="4.5" class="pill-t">チャット</text></g>
+          <g id="p-app"><rect x="-42" y="-12" width="84" height="24" rx="12" class="pill-app"/><text y="4.5" class="pill-t">案件一覧</text></g>
+          <g id="p-sheet"><rect x="-66" y="-12" width="132" height="24" rx="12" class="pill-sheet"/><text y="4.5" class="pill-t">スプレッドシート</text></g>
+        </defs>
+
+        <!-- 凡例 -->
+        <circle cx="548" cy="38" r="8" class="pill-chat"/>
+        <text x="562" y="43" class="legend">チャット（ディレクター）</text>
+        <circle cx="758" cy="38" r="8" class="pill-app"/>
+        <text x="772" y="43" class="legend">案件一覧（自分用）</text>
+        <circle cx="928" cy="38" r="8" class="pill-sheet"/>
+        <text x="942" y="43" class="legend">請求書のスプレッドシート</text>
+
+        <!-- ===== 上の段：案件の記録 ===== -->
+        <text x="20" y="44" class="h">案件（依頼から納品まで）</text>
+
+        <g class="rec">
+          <use href="#i-chat" x="120" y="150"/>
+          <use href="#i-list" x="360" y="150"/>
+          <use href="#i-film" x="840" y="150"/>
+          <use href="#i-box" x="1080" y="150"/>
+        </g>
+        <use href="#i-db" x="600" y="150"/>
+
+        <use href="#p-chat" x="120" y="80"/>
+        <use href="#p-app" x="360" y="80"/>
+        <use href="#p-app" x="840" y="80"/>
+        <use href="#p-app" x="1080" y="80"/>
+
+        <path class="arrow-r" d="M180 150 H286" marker-end="url(#mr)"/>
+        <path class="arrow-r" d="M418 150 H542" marker-end="url(#mr)"/>
+        <path class="arrow-r" d="M652 150 H770" marker-end="url(#mr)"/>
+        <path class="arrow-r" d="M900 150 H1016" marker-end="url(#mr)"/>
+
+        <text x="120" y="232" class="name">依頼が届く</text>
+        <text x="120" y="256" class="tech">ディレクターから</text>
+        <text x="120" y="275" class="tech">相談中 → 受注</text>
+
+        <text x="360" y="232" class="name">案件一覧に入力</text>
+        <text x="360" y="256" class="tech">「＋ 案件を追加」</text>
+        <text x="360" y="275" class="tech">会社名・単価・提出日など</text>
+
+        <text x="600" y="232" class="name">パソコンに保存</text>
+        <text x="600" y="256" class="tech">自分のパソコンの中のファイル</text>
+        <text x="600" y="275" class="tech">ネットには出さない</text>
+
+        <text x="840" y="232" class="name">編集して提出</text>
+        <text x="840" y="256" class="tech">状態をその場で選ぶ</text>
+        <text x="840" y="275" class="tech">編集中 → 提出済み</text>
+
+        <text x="1080" y="232" class="name">納品する</text>
+        <text x="1080" y="256" class="tech">納品日を自動で入れる</text>
+        <text x="1080" y="275" class="tech">修正の連絡なら編集中に戻す</text>
+
+        <!-- ===== 下の段：請求書 ===== -->
+        <text x="20" y="344" class="h">請求書（発行から入金まで）</text>
+
+        <!-- 納品済みの案件から、請求書を発行する -->
+        <path class="link" d="M1080 292 V366 H100 V384" marker-end="url(#ml)"/>
+        <text x="760" y="356" class="tag" fill="var(--inv)">納品済みの案件だけ、請求書を発行できる</text>
+
+        <use href="#p-app" x="100" y="402"/>
+        <use href="#p-sheet" x="300" y="402"/>
+        <use href="#p-sheet" x="500" y="402"/>
+        <use href="#p-sheet" x="700" y="402"/>
+        <use href="#p-app" x="1100" y="402"/>
+        <g class="inv">
+          <use href="#i-menu" x="100" y="470"/>
+          <use href="#i-sheet" x="300" y="470"/>
+          <use href="#i-pdf" x="500" y="470"/>
+          <use href="#i-folder" x="700" y="470"/>
+          <use href="#i-mail" x="900" y="470"/>
+          <use href="#i-coin" x="1100" y="470"/>
+        </g>
+
+        <path class="arrow-i" d="M150 470 H236" marker-end="url(#mi)"/>
+        <path class="arrow-i" d="M352 470 H436" marker-end="url(#mi)"/>
+        <path class="arrow-i" d="M552 470 H632" marker-end="url(#mi)"/>
+        <path class="arrow-i" d="M754 470 H832" marker-end="url(#mi)"/>
+        <path class="arrow-i" d="M962 470 H1036" marker-end="url(#mi)"/>
+
+        <text x="100" y="552" class="name">請求書を発行</text>
+        <text x="100" y="576" class="tech">「⋯」メニューから</text>
+        <text x="100" y="595" class="tech">状態は請求済みになる</text>
+
+        <text x="300" y="552" class="name">シートに自動で書き込む</text>
+        <text x="300" y="576" class="tech">発行ボタンで自動入力</text>
+        <text x="300" y="595" class="tech">取引先・案件名・金額・期限</text>
+
+        <text x="500" y="552" class="name">PDF を作成</text>
+        <text x="500" y="576" class="tech">メニュー「請求書」から</text>
+        <text x="500" y="595" class="tech">何月分かを選んで作る</text>
+
+        <text x="700" y="552" class="name">Drive に保存</text>
+        <text x="700" y="576" class="tech">請求書PDF / 年月</text>
+        <text x="700" y="595" class="tech">PDF のリンクが自動で入る</text>
+
+        <text x="900" y="552" class="name">取引先に送る</text>
+        <text x="900" y="576" class="tech">PDF を送る</text>
+        <text x="900" y="595" class="tech">送付方法・送付日を記入</text>
+
+        <text x="1100" y="552" class="name">入金を記録</text>
+        <text x="1100" y="576" class="tech">状態を入金済みにする</text>
+        <text x="1100" y="595" class="tech">入金日を自動で入れる</text>
+      </svg>
+    </div>
+  </section>
+
+  <p class="caption">動画編集 案件一覧・請求書発行 全体図</p>
+
+  <div class="notes">
+    <p><strong>2つの使い方：</strong>公開する見本（Vercel・架空の6件・開いた人のブラウザに保存）と、自分用（自分のパソコンの中だけ）。請求書を発行できるのは自分用だけです。</p>
+    <p><strong>画面の上の数字：</strong>進行中の件数、納品済みで未入金の合計、月ごとの売上（入金済み・入金予定）を、全件から自動で計算します。</p>
+    <p><strong>鍵の置き場所：</strong>Google につなぐ鍵とスプレッドシートの ID は、パソコンの中だけに置きます。GitHub と Vercel には入れません。</p>
+  </div>
+</main>
+</body>
+</html>
