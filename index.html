@@ -224,6 +224,12 @@
   .st-見送り { border-left-color: var(--line); color: var(--muted); font-weight: 400; }
 
   /* 状態のプルダウン（線の形のまま選べる） */
+  /* 表の中の日付の欄（ふだんは文字のように見せ、押すとカレンダーで選べる） */
+  .date-input { font: inherit; font-size: 0.85rem; color: var(--ink); background: transparent; border: none; border-bottom: 1px dashed var(--line); padding: 2px 0; cursor: pointer; }
+  .date-input:hover { border-bottom-color: var(--accent); }
+  .date-input:focus { outline: none; border-bottom: 1px solid var(--accent); }
+  .date-input.overdue { color: var(--danger); }
+  .overdue-note { color: var(--danger); font-weight: 700; }
   .status-select {
     appearance: none;
     background-color: transparent;
@@ -446,7 +452,8 @@
   function tableHtml(list) {
     const rows = list.map(p => {
       const overdue = isMyTurn(p) && p.due && daysFromToday(p.due) < 0;
-      const dueHtml = p.due ? (overdue ? `<span class="overdue">${p.due}（過ぎています）</span>` : p.due) : "-";
+      const dateInput = (label, v, cls) => `<input type="date" class="date-input${cls ? ` ${cls}` : ""}" aria-label="${p.name}の${label}" value="${v || ""}">`;
+      const dueHtml = (overdue ? `<span class="cell-note overdue-note">過ぎています</span>` : "") + dateInput("提出予定日", p.due, overdue ? "overdue" : "");
       const statusHtml = `<select class="status status-select st-${p.status}" aria-label="${p.name}の状態">` +
         STATUSES.map(s => `<option${s === p.status ? " selected" : ""}>${s}</option>`).join("") + `</select>`;
       return `<tr>
@@ -455,14 +462,14 @@
         ${cell("担当D", p.director)}
         ${cell("種類", p.type)}
         ${cell("区分", p.kind)}
-        ${cell("着手日", p.start || "-")}
+        ${cell("着手日", dateInput("着手日", p.start))}
         ${cell("状態", statusHtml)}
         ${cell("提出予定日", dueHtml)}
         ${cell("単価", p.price != null ? yen(p.price) : "-")}
-        ${cell("請求日", p.billed || "未請求")}
-        ${cell("入金予定日", p.payDue || "-")}
-        ${cell("入金日", p.paid || "-")}
-        ${cell("納品日", p.delivered || "-")}
+        ${cell("請求日", (p.billed ? "" : `<span class="cell-note">未請求</span>`) + dateInput("請求日", p.billed))}
+        ${cell("入金予定日", dateInput("入金予定日", p.payDue))}
+        ${cell("入金日", dateInput("入金日", p.paid))}
+        ${cell("納品日", dateInput("納品日", p.delivered))}
       </tr>`;
     }).join("");
     return `<div class="table-wrap"><table>

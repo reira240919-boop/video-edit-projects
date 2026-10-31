@@ -8,7 +8,7 @@ import { loadInvoiceTemplates, NO_TEMPLATES, writeInvoiceRow, type InvoiceTempla
 import { loadProjects, resetProjects, saveProjects } from "@/lib/storage";
 import FilterTabs from "@/components/FilterTabs";
 import ProjectForm from "@/components/ProjectForm";
-import ProjectTable from "@/components/ProjectTable";
+import ProjectTable, { type DateKey } from "@/components/ProjectTable";
 import SummaryBoxes from "@/components/SummaryBoxes";
 
 type Toast = { text: string; error?: boolean };
@@ -62,6 +62,12 @@ export default function ProjectBoard() {
   function changeStatus(id: string, status: Status) {
     if (!projects) return;
     update(projects.map((p) => (p.id === id ? applyStatus(p, status, TODAY) : p)));
+  }
+
+  // 表の中で日付を変えたとき。状態は変えない（日付だけ）
+  function changeDate(id: string, key: DateKey, value: string | null) {
+    if (!projects) return;
+    update(projects.map((p) => (p.id === id ? { ...p, [key]: value } : p)));
   }
 
   // 入力欄の保存。追加なら足し、修正なら同じ id の案件を置きかえる
@@ -133,6 +139,7 @@ export default function ProjectBoard() {
   const skipped = list.filter((p) => p.status === "見送り");
   const tableHandlers = {
     onStatusChange: changeStatus,
+    onDateChange: changeDate,
     // 請求書を発行は自分用だけ（見本では出さない）
     onInvoice: IS_MINE ? issueInvoice : undefined,
     onEdit: (project: Project) => setForm({ mode: "edit", project }),

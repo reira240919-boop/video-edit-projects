@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { STATUSES, type Project, type Status } from "@/data/sampleProjects";
 import { IS_MINE, TODAY } from "@/lib/mode";
 import { isOverdue, yen } from "@/lib/projects";
@@ -12,6 +12,9 @@ type Column =
 const COLUMNS: Column[] = IS_MINE
   ? ["name", "director", "type", "kind", "status", "start", "roughDue", "due", "price", "billed", "payDue", "paid", "delivered"]
   : ["name", "director", "type", "kind", "start", "status", "due", "price", "billed", "payDue", "paid", "delivered"];
+
+// 表の中でその場で変えられる日付の列
+export type DateKey = "start" | "roughDue" | "due" | "billed" | "payDue" | "paid" | "delivered";
 
 const HEADERS: Record<Column, string> = {
   name: "会社名 / 案件名",
@@ -29,13 +32,57 @@ const HEADERS: Record<Column, string> = {
   delivered: "納品日",
 };
 
-export default function ProjectTable({ projects, onStatusChange, onInvoice, onEdit, onDelete }: {
+// 日付をその場で選ぶ欄。打ちかけで何度も保存しないよう、欄から離れたとき（または Enter）に保存する
+function DateCell({ value, label, onChange, className }: {
+  value: string | null;
+  label: string;
+  onChange: (value: string | null) => void;
+  className?: string;
+}) {
+  const [draft, setDraft] = useState(value ?? "");
+  const [prev, setPrev] = useState(value);
+  // 状態を変えて日付が入ったときなど、外から変わったら入れ直す
+  if (prev !== value) {
+    setPrev(value);
+    setDraft(value ?? "");
+  }
+  function commit() {
+    const next = draft === "" ? null : draft;
+    if (next !== value) onChange(next);
+  }
+  return (
+    <input
+      type="date"
+      className={`date-input${className ? ` ${className}` : ""}`}
+      aria-label={label}
+      value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
+    />
+  );
+}
+
+export default function ProjectTable({ projects, onStatusChange, onDateChange, onInvoice, onEdit, onDelete }: {
   projects: Project[];
   onStatusChange: (id: string, status: Status) => void;
+  onDateChange: (id: string, key: DateKey, value: string | null) => void;
   onInvoice?: (project: Project) => void; // 自分用だけ渡す
   onEdit: (project: Project) => void;
   onDelete: (project: Project) => void;
 }) {
+  // 日付のマス。変えるとすぐ保存する
+  function date(p: Project, key: DateKey, className?: string) {
+    return (
+      <DateCell
+        value={p[key]}
+        label={`${p.name}の${HEADERS[key]}`}
+        onChange={(v) => onDateChange(p.id, key, v)}
+        className={className}
+      />
+    );
+  }
+
   // 1つのマスの中身
   function cell(p: Project, column: Column): ReactNode {
     switch (column) {
@@ -63,12 +110,24 @@ export default function ProjectTable({ projects, onStatusChange, onInvoice, onEd
             ))}
           </select>
         );
-      case "start": return p.start ?? "-";
-      case "roughDue": return p.roughDue ?? "-";
-      case "due":
-        return p.due == null ? "-"
-          : isOverdue(p, TODAY) ? <span className="overdue">{p.due}（過ぎています）</span>
-          : p.due;
+      case "due": {
+        const overdue = isOverdue(p, TODAY);
+        return (
+          <>
+            {overdue && <span className="cell-note overdue-note">過ぎています</span>}
+            {date(p, "due", overdue ? "overdue" : undefined)}
+          </>
+        );
+      }
+      case "billed":
+        return (
+          <>
+            {p.billed == null && <span className="cell-note">未請求</span>}
+            {date(p, "billed")}
+          </>
+        );
+      case "start": case "roughDue": case "payDue": case "paid": case "delivered":
+        return date(p, column);
       case "price":
         return (
           <>
@@ -79,10 +138,6 @@ export default function ProjectTable({ projects, onStatusChange, onInvoice, onEd
             {p.price != null ? yen(p.price) : "-"}
           </>
         );
-      case "billed": return p.billed ?? "未請求";
-      case "payDue": return p.payDue ?? "-";
-      case "paid": return p.paid ?? "-";
-      case "delivered": return p.delivered ?? "-";
     }
   }
 
