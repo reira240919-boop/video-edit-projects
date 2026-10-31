@@ -233,6 +233,22 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .status-select:focus { outline: none; }
 .status-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+/* 表の中の日付の欄（ふだんは文字のように見せ、押すとカレンダーで選べる） */
+.date-input {
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--line);
+  padding: 2px 0;
+  cursor: pointer;
+}
+.date-input:hover { border-bottom-color: var(--accent); }
+.date-input:focus { outline: none; border-bottom: 1px solid var(--accent); }
+.date-input.overdue { color: var(--danger); }
+.overdue-note { color: var(--danger); font-weight: 700; }
+
 /* 「保存しました」などのお知らせ（画面の下に数秒出す）。白＋左にメインの色の線 */
 .toast {
   position: fixed;
